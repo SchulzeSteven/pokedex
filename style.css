@@ -35,6 +35,10 @@ body {
     padding-top: 8px;
 }
 
+#pokemon-id {
+    font-size: 24px;
+}
+
 .pokemon-image {
     filter: drop-shadow(8px 4px 6px black);
 }

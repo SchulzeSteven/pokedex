@@ -40,35 +40,37 @@ async function renderPokemon(id, content) {
 }
 
 
+function setSpeciesColor(currentPokemon, index) {
+    let type = currentPokemon.types[index].type.name;
+    return typeColors[type];
+}
+
+
+function getSpeciesColors(currentPokemon) {
+    let speciesColors = {};
+    speciesColors.species1Color = setSpeciesColor(currentPokemon, 0);
+    if (currentPokemon.types.length > 1) {
+        speciesColors.species2Color = setSpeciesColor(currentPokemon, 1);
+    } else {
+        speciesColors.species2Color = 'transparent';
+    }
+    return speciesColors;
+}
+
+
 function PokemonRender(currentPokemon) {
-    // Großschreibung des ersten Buchstabens des Pokémon-Namens
     let pokemonName = currentPokemon.name.charAt(0).toUpperCase() + currentPokemon.name.slice(1);
-
-    let species1Color = typeColors[currentPokemon.types[0].type.name];
-    let species2Color = currentPokemon.types.length > 1 ? typeColors[currentPokemon.types[1].type.name] : 'transparent';
-
-    // Wähle die Hintergrundfarbe entsprechend dem ersten Typ des Pokémon
+    let { species1Color, species2Color } = getSpeciesColors(currentPokemon);
     let cardBackgroundColor = typeColors[currentPokemon.types[0].type.name];
-
+    let headerHTML = generatePokemonHeader(currentPokemon, pokemonName);
+    let bodyHTML = generatePokemonBody(currentPokemon, species1Color, species2Color);
     return `
     <div id="pokemon-card" class="card" style="width: 18rem; background-color: ${cardBackgroundColor};">
-        <div class="header-card">
-           <h3 id="pokemon-name" class="card-title">${pokemonName}</h3>
-           <span id="pokemon-id"><b>#${currentPokemon.id}</b></span>
-        </div>
-        <img id="pokemon-image" class="card-img-top pokemon-image image-size" src="${currentPokemon.sprites.other['home'].front_default}" alt="...">
-        <div class="card-body">
-            <div class="species">
-                <div class="flex-direction">
-                    <div class="species-bubble species1" style="background-color: ${species1Color}">${getSpecies(currentPokemon, 0)}</div>
-                    <div class="species-bubble species2" style="background-color: ${species2Color}">${getSpecies(currentPokemon, 1)}</div>
-                </div>
-            </div>
-        </div>
+        ${headerHTML}
+        ${bodyHTML}
     </div>
     `;
 }
-
 
 
 function getSpecies(currentPokemon, index) {
