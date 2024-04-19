@@ -1,4 +1,4 @@
-let pokemonAmount = 20;
+let pokemonAmount = 30;
 let id = 1;
 let typeColors = {
     normal: 'rgb(168,168,153)',
