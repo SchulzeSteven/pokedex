@@ -58,6 +58,7 @@ h1 {
 .card {
     border-radius: 10% !important;
     box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
 }
 
 .card:hover {
@@ -98,7 +99,7 @@ h1 {
     margin-right: 5px;
     display: flex;
     justify-content: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.4);
 }
 
 .species1 {
@@ -111,4 +112,12 @@ h1 {
 
 .species-direction {
     display: flex;
+}
+
+.load-more {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    bottom: 64px;
 }

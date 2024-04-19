@@ -27,6 +27,14 @@ async function init() {
         await renderPokemon(id, content);
         id += 1;
     }
+    if (id > pokemonAmount) {
+        document.getElementById('loadMoreButton').style.display = 'block';
+    }
+}
+
+
+function loadMore() {
+    init();
 }
 
 
@@ -75,7 +83,8 @@ function PokemonRender(currentPokemon) {
 
 function getSpecies(currentPokemon, index) {
     if (currentPokemon.types && currentPokemon.types.length > index) {
-        return currentPokemon.types[index].type.name;
+        let species = currentPokemon.types[index].type.name;
+        return species.charAt(0).toUpperCase() + species.slice(1);
     }
     return '';
 }
