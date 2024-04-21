@@ -1,5 +1,6 @@
 function generatePokemonCardHtml(id, pokemonName, cardBackgroundColor, headerHTML, bodyHTML, currentPokemon) {
-    // Achte darauf, dass currentPokemon alle benötigten Daten enthält, einschließlich currentPokemon.sprites
+    const pokemonTypesHtml = generatePokemonTypesHtml(currentPokemon.types);
+    const formattedId = id.toString().padStart(3, '0');
     return `
     <div id="pokemon-card-${id}" class="card" onclick="toggleActiveClass(this)" style="background-color: ${cardBackgroundColor};">
         <div class="card__face card__front">
@@ -7,9 +8,13 @@ function generatePokemonCardHtml(id, pokemonName, cardBackgroundColor, headerHTM
             ${bodyHTML}
         </div>
         <div class="card__face card__back">
-            <h2>${pokemonName}</h2>
+            <div class="h2-back"><h2>${pokemonName}</h2><span>#${formattedId}</span></div> <!-- Name und ID zusammen anzeigen -->
             <img id="pokemon-image-back-${id}" class="image-back" src="${currentPokemon.sprites.other['official-artwork'].front_default}" alt="${pokemonName}">
-            <div class="second-area"></div>
+            <div class="second-area">
+                <div class="types-back">
+                    ${pokemonTypesHtml} <!-- Pokémon-Typen hier anzeigen -->
+                </div>
+            </div>
         </div>
     </div>
     `;
@@ -40,4 +45,13 @@ function generatePokemonBody(currentPokemon, species1Color, species2Color) {
         </div>
     </div>
     `;
+}
+
+
+function generatePokemonTypesHtml(types) {
+    return types.map(typeInfo => {
+        // Erster Buchstabe groß, der Rest klein
+        const typeName = typeInfo.type.name.charAt(0).toUpperCase() + typeInfo.type.name.slice(1).toLowerCase();
+        return `<span class="pokemon-type" style="background-color: ${typeColors[typeInfo.type.name]}">${typeName}</span>`;
+    }).join(' ');
 }

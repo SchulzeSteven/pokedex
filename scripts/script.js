@@ -25,11 +25,14 @@ let typeColors = {
 
 async function init() {
     let content = document.getElementById('pokemon-list');
-    for (let i = 0; i < pokemonAmount; i++) {
+    let maxId = Math.min(id + 29, 151); // Stelle sicher, dass nicht mehr als 151 Pokémon geladen werden
+    for (; id <= maxId; id++) {
         await renderPokemon(id, content);
-        id += 1;
     }
-    if (id > pokemonAmount) {
+    // Verstecke den Load More Button, wenn die maximale Anzahl erreicht ist
+    if (id > 151) {
+        document.getElementById('loadMoreButton').style.display = 'none';
+    } else {
         document.getElementById('loadMoreButton').style.display = 'block';
     }
 }
@@ -92,40 +95,53 @@ function getSpecies(currentPokemon, index) {
 async function searchAndSuggestPokemon() {
     let searchTerm = document.getElementById('search').value.toLowerCase();
     clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(async () => {
-        await initializeSearch(searchTerm);
-    }, 500); // Debounce the input for 500ms
+    if (searchTerm.length >= 3) {
+        document.getElementById('loadMoreButton').style.display = 'none';  // Verstecke den Load More Button während der Suche
+        searchTimeout = setTimeout(async () => {
+            await initializeSearch(searchTerm);
+        }, 500); // Debounce der Eingabe für 500 ms
+    } else if (searchTerm.length === 0) {
+        document.getElementById('pokemon-list').innerHTML = '';  // Bereinige die Liste
+        await loadInitialPokemons(document.getElementById('pokemon-list'));
+        document.getElementById('loadMoreButton').style.display = 'block'; // Zeige Load More Button, wenn keine Suche aktiv ist
+    }
 }
+
 
 async function initializeSearch(searchTerm) {
     let content = document.getElementById('pokemon-list');
-    let loadMoreButton = document.getElementById('loadMoreButton');
     content.innerHTML = ''; // Clear current content
-
     if (searchTerm.length === 0) {
-        loadMoreButton.style.display = 'block';
+        document.getElementById('loadMoreButton').style.display = 'block';
         await loadInitialPokemons(content);
     } else {
-        loadMoreButton.style.display = 'none';
+        document.getElementById('loadMoreButton').style.display = 'none';
         await searchAndRenderPokemons(searchTerm, content);
     }
 }
 
+
 async function loadInitialPokemons(content) {
+    content.innerHTML = '';  // Lösche vorhandenen Inhalt bevor neue Pokémon geladen werden
     for (let i = 1; i <= 30; i++) {
         let currentPokemon = await getPokemonData(i);
         content.innerHTML += PokemonRender(currentPokemon);
     }
+    document.getElementById('loadMoreButton').style.display = 'block'; // Stelle sicher, dass der Button angezeigt wird, wenn die initialen Pokémon geladen werden
 }
 
+
 async function searchAndRenderPokemons(searchTerm, content) {
-    for (let i = 1; i <= 898; i++) {
+    let count = 0;
+    for (let i = 1; i <= 151 && count < 10; i++) { // Begrenze auf die ersten 151 Pokémon
         let currentPokemon = await getPokemonData(i);
-        if (currentPokemon.name.substring(0, searchTerm.length) === searchTerm) {
+        if (currentPokemon.name.toLowerCase().includes(searchTerm)) {
             content.innerHTML += PokemonRender(currentPokemon);
+            count++;
         }
     }
 }
+
 
 async function getPokemonData(id) {
     if (!pokemonCache[id]) {
@@ -196,8 +212,47 @@ function toggleActiveClass(element) {
 
 
 document.addEventListener('DOMContentLoaded', () => {
+    const typeOptionsContainer = document.getElementById('type-options');
+    const typeCheckboxHtml = Object.keys(typeColors).map(type => `
+        <label>
+            <input type="checkbox" name="type" value="${type}" onchange="filterByType()"> ${type.charAt(0).toUpperCase() + type.slice(1)}
+        </label>
+    `).join('');
+    typeOptionsContainer.innerHTML = typeCheckboxHtml;
+
     const cards = document.querySelectorAll('.card');
     cards.forEach(card => {
         card.onclick = () => toggleActiveClass(card);
     });
 });
+
+
+function toggleFilterMenu() {
+    const filterMenu = document.getElementById('type-options');
+    filterMenu.style.display = filterMenu.style.display === 'block' ? 'none' : 'block';
+}
+
+
+function filterByType() {
+    const checkedTypes = Array.from(document.querySelectorAll('input[name="type"]:checked')).map(el => el.value);
+    const content = document.getElementById('pokemon-list');
+    content.innerHTML = ''; // Clear current content
+
+    if (checkedTypes.length === 0) {
+        loadInitialPokemons(content);
+        document.getElementById('loadMoreButton').style.display = 'block'; // Zeige Load More Button, wenn keine Filter aktiv sind
+    } else {
+        document.getElementById('loadMoreButton').style.display = 'none'; // Verstecke den Load More Button während des Filterns
+        filterAndRenderPokemons(checkedTypes, content);
+    }
+}
+
+
+async function filterAndRenderPokemons(checkedTypes, content) {
+    for (let i = 1; i <= 151; i++) { // Begrenze auf die ersten 151 Pokémon
+        let pokemon = await getPokemonData(i);
+        if (pokemon.types.some(type => checkedTypes.includes(type.type.name))) {
+            content.innerHTML += PokemonRender(pokemon);
+        }
+    }
+}

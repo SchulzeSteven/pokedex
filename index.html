@@ -22,8 +22,19 @@
         <h1>My Pokédex</h1>
         <form class="input-group mb-3 flex-center">
             <input onkeyup="searchAndSuggestPokemon()" id="search"
-            type="text" pattern="/[A-Za-z\s]+/" class="form-control search-pokemon" placeholder="Search your Pokemon">
+            type="text" pattern="/[A-Za-z\s]+/" class="form-control search-pokemon" placeholder="Search your Pokémon">
         </form>
+        <div id="type-filter" class="type-filter">
+            <button onclick="toggleFilterMenu()">Filter</button>
+            <div id="type-options" class="type-options" style="display: none;">
+                ${Object.keys(typeColors).map(type => `
+                    <label>
+                        <input type="checkbox" name="type" value="${type}" onchange="filterByType()">
+                        ${type.charAt(0).toUpperCase() + type.slice(1)}
+                    </label>
+                `).join('')}
+            </div>
+        </div>
     </header>
     <section id="pokemon-list" class="content"></section>
     <div id="background-blur" class="background-blur"></div>
