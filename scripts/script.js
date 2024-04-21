@@ -187,6 +187,8 @@ function deactivateActiveCard() {
 function hideBackgroundBlur() {
     const background = document.getElementById('background-blur');
     background.style.display = 'none';
+    // Entferne alle Klick-Event-Listener, um sicherzustellen, dass keine veralteten Referenzen bestehen bleiben
+    background.replaceWith(background.cloneNode(true)); 
 }
 
 
@@ -211,10 +213,10 @@ function toggleActiveClass(element) {
 
 
 function closeCard(event, element) {
-    event.stopPropagation(); // Verhindern, dass der Klick-Event weitergeleitet wird
-    const card = document.querySelector('.active-overlay');
-    if (card) {
-        document.body.removeChild(card);
+    event.stopPropagation(); // Stoppe die Weiterleitung des Events
+    const card = document.querySelector('.active-overlay'); // Wähle das aktive Overlay-Element
+    if (card && card.parentNode === document.body) { // Prüfe, ob das Element vorhanden ist und der direkte Kindknoten von `body` ist
+        document.body.removeChild(card); // Entferne es sicher
         hideBackgroundBlur();
     }
 }
