@@ -198,15 +198,14 @@ function toggleActiveClass(element) {
         clone.classList.add('active-overlay');
         document.body.appendChild(clone);
 
-        clone.addEventListener('click', () => {
+        // Setze einen Event-Listener nur auf den Hintergrund
+        document.getElementById('background-blur').addEventListener('click', function handler() {
             document.body.removeChild(clone);
             hideBackgroundBlur();
+            this.removeEventListener('click', handler);
         });
 
         showBackgroundBlur();
-    } else {
-        document.body.removeChild(document.querySelector('.active-overlay'));
-        hideBackgroundBlur();
     }
 }
 
@@ -259,4 +258,15 @@ async function filterAndRenderPokemons(checkedTypes, content) {
             content.innerHTML += PokemonRender(pokemon);
         }
     }
+}
+
+
+function navigateBack() {
+    console.log("Navigiere zurück");
+    // Hier könnten Funktionen stehen, um zum vorherigen Datensatz oder Seite zu gehen
+}
+
+function navigateForward() {
+    console.log("Navigiere vorwärts");
+    // Hier könnten Funktionen stehen, um zum nächsten Datensatz oder Seite zu gehen
 }

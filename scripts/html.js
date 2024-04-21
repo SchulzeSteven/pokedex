@@ -3,20 +3,27 @@ function generatePokemonCardHtml(id, pokemonName, cardBackgroundColor, headerHTM
     const formattedId = id.toString().padStart(3, '0');
     return `
     <div id="pokemon-card-${id}" class="card" onclick="toggleActiveClass(this)" style="background-color: ${cardBackgroundColor};">
-        <div class="card__face card__front">
-            ${headerHTML}
-            ${bodyHTML}
+    <div class="card__face card__front">
+        ${headerHTML}
+        ${bodyHTML}
+    </div>
+    <div class="card__face card__back">
+        <div class="h2-back">
+            <h2>${pokemonName}</h2><span>#${formattedId}</span>
+        </div> <!-- Name und ID zusammen anzeigen -->
+        <div class="types-back">
+            ${pokemonTypesHtml} <!-- Pokémon-Typen hier anzeigen -->
         </div>
-        <div class="card__face card__back">
-            <div class="h2-back"><h2>${pokemonName}</h2><span>#${formattedId}</span></div> <!-- Name und ID zusammen anzeigen -->
-            <div class="types-back">
-                    ${pokemonTypesHtml} <!-- Pokémon-Typen hier anzeigen -->
-                </div>
-            <img id="pokemon-image-back-${id}" class="image-back" src="${currentPokemon.sprites.other['official-artwork'].front_default}" alt="${pokemonName}">
-            <div class="second-area">
+        <img id="pokemon-image-back-${id}" class="image-back"
+            src="${currentPokemon.sprites.other['official-artwork'].front_default}" alt="${pokemonName}">
+        <div class="second-area">
+            <div class="navigation-arrows">
+                <button onclick="navigateBack()" class="arrow-button" id="back-arrow">&#8678</button>
+                <button onclick="navigateForward()" class="arrow-button" id="forward-arrow">&#8680</button>
             </div>
         </div>
     </div>
+</div>
     `;
 }
 

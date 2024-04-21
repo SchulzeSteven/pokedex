@@ -291,6 +291,27 @@ h1 {
     background-color: #f8f9fa;
 }
 
+.navigation-arrows {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px;
+    top: 225px;
+    position: relative;
+}
+
+.arrow-button {
+    background-color: #f2f2f2;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.arrow-button:hover {
+    background-color: #e0e0e0;
+}
+
 @media only screen and (max-width: 500px) {
     .card.active-overlay {
         width: 14rem;
@@ -315,6 +336,14 @@ h1 {
 
     .second-area {
         height: 74%;
+    }
+
+    .navigation-arrows {
+        top: 240px;
+    }
+
+    .arrow-button {
+        font-size: 14px;
     }
 }
 
@@ -343,5 +372,13 @@ h1 {
 
     .second-area {
         height: 75%;
+    }
+
+    .navigation-arrows {
+        top: 215px;
+    }
+
+    .arrow-button {
+        font-size: 12px;
     }
 }
