@@ -229,7 +229,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function toggleFilterMenu() {
     const filterMenu = document.getElementById('type-options');
-    filterMenu.style.display = filterMenu.style.display === 'block' ? 'none' : 'block';
+    if (filterMenu.style.display === 'block') {
+        filterMenu.style.display = 'none';
+    } else {
+        filterMenu.style.display = 'block';
+    }
 }
 
 

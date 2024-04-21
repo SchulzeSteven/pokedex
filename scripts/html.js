@@ -9,11 +9,11 @@ function generatePokemonCardHtml(id, pokemonName, cardBackgroundColor, headerHTM
         </div>
         <div class="card__face card__back">
             <div class="h2-back"><h2>${pokemonName}</h2><span>#${formattedId}</span></div> <!-- Name und ID zusammen anzeigen -->
-            <img id="pokemon-image-back-${id}" class="image-back" src="${currentPokemon.sprites.other['official-artwork'].front_default}" alt="${pokemonName}">
-            <div class="second-area">
-                <div class="types-back">
+            <div class="types-back">
                     ${pokemonTypesHtml} <!-- Pokémon-Typen hier anzeigen -->
                 </div>
+            <img id="pokemon-image-back-${id}" class="image-back" src="${currentPokemon.sprites.other['official-artwork'].front_default}" alt="${pokemonName}">
+            <div class="second-area">
             </div>
         </div>
     </div>

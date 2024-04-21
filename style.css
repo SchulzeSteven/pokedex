@@ -20,10 +20,17 @@ h1 {
 
 .h2-back{
     display: flex;
-    align-items: center;
     font-weight: bold;
-    gap: 50px;
+    justify-content: space-between;
     margin-top: 8px;
+    font-size: 20px;
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+.h2-name {
+    font-size: 24px;
+    font-weight: bold;
 }
 
 .flex-center {
@@ -77,10 +84,11 @@ h1 {
 
 .card-title {
     font-weight: bold;
+    font-size: 24px;
 }
 
 #pokemon-id {
-    font-size: 24px;
+    font-size: 22px;
 }
 
 .pokemon-image {
@@ -96,7 +104,7 @@ h1 {
     cursor: pointer;
     position: relative;
     width: 16rem;
-    height: 23rem;
+    height: 22rem;
 }
 
 .card.active-overlay {
@@ -107,17 +115,14 @@ h1 {
     z-index: 1000;
     width: 18rem;
     height: 27rem;
-    border-radius: 20px;
+    border-radius: 15px !important;
     cursor: default;
 }
 
 .pokemon-type {
-    position: relative;
     border-radius: 10px;
     color: black;
     box-shadow: 0 3px 3px rgba(0, 0, 0, 0.4);
-    bottom: 110px;
-    left: 215px;
     display: flex;
     justify-content: center;
 }
@@ -136,9 +141,6 @@ h1 {
 .card__back {
     background-color: transparent;
     transform: rotateY(180deg);
-    display: flex;
-    align-items: center;
-    flex-direction: column;
 }
 
 .background-blur {
@@ -210,9 +212,10 @@ h1 {
 
 .image-back {
     width: 50%;
-    margin-top: -40px;
+    margin-top: -45px;
     position: relative;
-    top: 40px;
+    top: 10%;
+    left: 25%;
     filter: drop-shadow(8px 4px 6px black);
 }
 
@@ -220,30 +223,125 @@ h1 {
     display: flex;
     justify-content: center;
     flex-direction: column;
-    width: 20%;
-    gap: 8px;
+    position: absolute;
+    width: 25%;
+    font-size: 14px;
+    gap: 10px;
+    top: 60px;
+    left: 5px;
 }
 
 .second-area {
     background-color: white;
     width: 100%;
-    height: 100%;
-    border-top-left-radius: 40px;
-    border-bottom-left-radius: 25px;
-    border-bottom-right-radius: 25px;
-    border-top-right-radius: 40px;
+    height: 66%;
+    border-top-left-radius: 41px;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    border-top-right-radius: 41px;
+    box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.5);
 }
 
+/* Filter */
 .type-filter {
     position: relative;
     display: inline-block;
+    margin: 10px;
+}
+
+.type-filter button {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    font-size: 16px;
+}
+
+.type-filter button:hover {
+    background-color: #0056b3;
 }
 
 .type-options {
+    display: none;
     position: absolute;
     background: white;
     border: 1px solid #ccc;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     padding: 10px;
+    width: 120px;
     z-index: 100;
+    top: 40px;
+    left: 0;
+}
+
+.type-options label {
+    display: block;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.type-options input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.type-options label:hover {
+    background-color: #f8f9fa;
+}
+
+@media only screen and (max-width: 500px) {
+    .card.active-overlay {
+        width: 14rem;
+        height: 25rem;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    .h2-back {
+        padding-left: 20px;
+        padding-right: 20px;
+        font-size: 16px;
+    }
+
+    .types-back {
+        font-size: 12px;
+        top: 45px;
+        gap: 7px;
+    }
+
+    .second-area {
+        height: 74%;
+    }
+}
+
+@media only screen and (max-width: 400px) {
+    .card.active-overlay {
+        width: 12rem;
+        height: 22rem;
+    }
+
+    h2 {
+        font-size:18px;
+    }
+
+    .h2-back {
+        padding-left: 15px;
+        padding-right: 15px;
+        font-size: 14px;
+    }
+
+    .types-back {
+        font-size: 12px;
+        top: 35px;
+        right: 12px;
+        gap: 4px;
+    }
+
+    .second-area {
+        height: 75%;
+    }
 }
