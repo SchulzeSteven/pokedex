@@ -19,6 +19,7 @@ function generatePokemonCardHtml(id, pokemonName, cardBackgroundColor, headerHTM
         <div class="second-area">
             <div class="navigation-arrows">
                 <button onclick="navigateBack()" class="arrow-button" id="back-arrow">&#8678</button>
+                <div class="close-button" onclick="closeCard(event, this)"></div>
                 <button onclick="navigateForward()" class="arrow-button" id="forward-arrow">&#8680</button>
             </div>
         </div>

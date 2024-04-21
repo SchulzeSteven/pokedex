@@ -210,6 +210,16 @@ function toggleActiveClass(element) {
 }
 
 
+function closeCard(event, element) {
+    event.stopPropagation(); // Verhindern, dass der Klick-Event weitergeleitet wird
+    const card = document.querySelector('.active-overlay');
+    if (card) {
+        document.body.removeChild(card);
+        hideBackgroundBlur();
+    }
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
     const typeOptionsContainer = document.getElementById('type-options');
     const typeCheckboxHtml = Object.keys(typeColors).map(type => `

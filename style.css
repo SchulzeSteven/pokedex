@@ -312,6 +312,45 @@ h1 {
     background-color: #e0e0e0;
 }
 
+.close-button {
+    position: relative;
+    top: 4px;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: transparent;
+    color: #828282;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    z-index: 1002; /* Sicherstellen, dass es über anderen Inhalten liegt */
+}
+
+.close-button:hover {
+    transform: scale(1.2);
+}
+
+.close-button::before, .close-button::after {
+    content: '';
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    top: 50%;
+    left: 50%;
+    background-color: currentColor;
+}
+
+.close-button::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.close-button::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+}
+
 @media only screen and (max-width: 500px) {
     .card.active-overlay {
         width: 14rem;
