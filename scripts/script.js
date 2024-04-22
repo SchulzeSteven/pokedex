@@ -1,6 +1,8 @@
 let pokemonAmount = 30;
 let id = 1;
 let lastSearchTerm = null;
+let filteredPokemonIds = [];
+let filterIsActive = false;
 let pokemonCache = {};
 let searchTimeout;
 let typeColors = {
@@ -143,7 +145,8 @@ async function loadInitialPokemons(content) {
         let currentPokemon = await getPokemonData(i);
         content.innerHTML += PokemonRender(currentPokemon);
     }
-    document.getElementById('loadMoreButton').style.display = 'block'; // Stelle sicher, dass der Button angezeigt wird, wenn die initialen Pokémon geladen werden
+    document.getElementById('loadMoreButton').style.display = 'block'; // Stelle sicher, dass der Button angezeigt wird
+    filterIsActive = false; // Keine Filter sind aktiv
 }
 
 
@@ -243,26 +246,30 @@ function toggleFilterMenu() {
 }
 
 
-function filterByType() {
+async function filterByType() {
     const checkedTypes = Array.from(document.querySelectorAll('input[name="type"]:checked')).map(el => el.value);
     const content = document.getElementById('pokemon-list');
     content.innerHTML = ''; // Clear current content
 
     if (checkedTypes.length === 0) {
+        filterIsActive = false; // Keine Filter aktiv
         loadInitialPokemons(content);
-        document.getElementById('loadMoreButton').style.display = 'block'; // Zeige Load More Button, wenn keine Filter aktiv sind
+        document.getElementById('loadMoreButton').style.display = 'block';
     } else {
-        document.getElementById('loadMoreButton').style.display = 'none'; // Verstecke den Load More Button während des Filterns
+        filterIsActive = true; // Filter sind aktiv
+        document.getElementById('loadMoreButton').style.display = 'none';
         filterAndRenderPokemons(checkedTypes, content);
     }
 }
 
 
 async function filterAndRenderPokemons(checkedTypes, content) {
+    filteredPokemonIds = []; // Reset bei jeder neuen Filterung
     for (let i = 1; i <= 151; i++) { // Begrenze auf die ersten 151 Pokémon
         let pokemon = await getPokemonData(i);
         if (pokemon.types.some(type => checkedTypes.includes(type.type.name))) {
             content.innerHTML += PokemonRender(pokemon);
+            filteredPokemonIds.push(i); // Speichere die ID des Pokémon
         }
     }
 }
@@ -271,14 +278,31 @@ async function filterAndRenderPokemons(checkedTypes, content) {
 async function navigateBack() {
     const currentId = getCurrentPokemonId();
     if (!currentId) return;
-    let newId = currentId > 1 ? currentId - 1 : 151; // Loop zum letzten Pokémon, wenn ID 1 ist
+    let currentIndex, newId;
+    
+    if (filterIsActive) {
+        currentIndex = filteredPokemonIds.indexOf(currentId);
+        newId = currentIndex > 0 ? filteredPokemonIds[currentIndex - 1] : filteredPokemonIds[filteredPokemonIds.length - 1];
+    } else {
+        newId = currentId > 1 ? currentId - 1 : 151;
+    }
+
     updatePokemonCard(newId);
 }
+
 
 async function navigateForward() {
     const currentId = getCurrentPokemonId();
     if (!currentId) return;
-    let newId = currentId < 151 ? currentId + 1 : 1; // Loop zum ersten Pokémon, wenn ID 151 ist
+    let currentIndex, newId;
+
+    if (filterIsActive) {
+        currentIndex = filteredPokemonIds.indexOf(currentId);
+        newId = currentIndex < filteredPokemonIds.length - 1 ? filteredPokemonIds[currentIndex + 1] : filteredPokemonIds[0];
+    } else {
+        newId = currentId < 151 ? currentId + 1 : 1;
+    }
+
     updatePokemonCard(newId);
 }
 
