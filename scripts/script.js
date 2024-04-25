@@ -21,7 +21,6 @@ let typeColors = {
     rock: 'rgb(168,153,91)',
     ghost: 'rgb(152, 108, 251)',
     dragon: 'rgb(176, 152, 251)',
-    dark: 'rgb(108, 132, 151)',
     steel: 'rgb(196, 206, 214)',
     fairy: 'rgb(212,128,207)',
 };
@@ -54,6 +53,7 @@ async function renderPokemon(id, content) {
 
     console.log('Loaded Pokemon', currentPokemon);
     content.innerHTML += PokemonRender(currentPokemon);
+    updatePokemonDetails(currentPokemon, id);
 }
 
 
@@ -275,6 +275,13 @@ async function filterAndRenderPokemons(checkedTypes, content) {
 }
 
 
+function updatePokemonDetails(pokemonData, id) {
+    document.getElementById(`aboutExperience${id}`).textContent = pokemonData.base_experience;
+    document.getElementById(`aboutHeight${id}`).textContent = (pokemonData.height / 10) + ' m';
+    document.getElementById(`aboutWeight${id}`).textContent = (pokemonData.weight / 10) + ' kg';
+}
+
+
 async function navigateBack() {
     const currentId = getCurrentPokemonId();
     if (!currentId) return;
@@ -327,20 +334,18 @@ async function updatePokemonCard(pokemonId) {
 
     const activeCard = document.querySelector('.active-overlay');
     if (activeCard) {
-        activeCard.remove(); // Entferne die aktuelle aktive Karte
+        activeCard.remove(); // Remove the current active card
     }
 
     const newCardHtml = PokemonRender(pokemonData);
-    const background = document.getElementById('background-blur');
     const container = document.createElement('div');
     container.innerHTML = newCardHtml;
-
-    // Stellen Sie sicher, dass das erste Element innerhalb des Containers korrekt ist.
     const newCard = container.firstElementChild;
+
     if (newCard) {
-        newCard.classList.add('active-overlay'); // Füge die Klasse für das Overlay hinzu
-        document.body.appendChild(newCard); // Füge die neue Karte dem Body hinzu
-        showBackgroundBlur(); // Zeige den Hintergrund-Blur wieder an
+        newCard.classList.add('active-overlay');
+        document.body.appendChild(newCard);
+        showBackgroundBlur();
     } else {
         console.error('Error: The new card element was not created correctly.');
     }
