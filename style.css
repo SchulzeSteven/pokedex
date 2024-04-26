@@ -305,7 +305,7 @@ h2 {
     display: flex;
     justify-content: space-between;
     padding: 16px;
-    top: 80px;
+    top: 70px;
     position: relative;
 }
 
@@ -368,18 +368,18 @@ h2 {
     top: 24px;
 }
 
-.tab-content1 {
+.tab-detail {
     position: relative;
     display: flex;
     justify-content: space-around;
-    top: 50px;
-    font-size: 14px;
+    top: 45px;
+    font-size: 16px;
 }
 
 .tab {
     font-weight: bolder;
     border-radius: 25px;
-    font-size: 14px;
+    font-size: 16px;
     cursor: pointer;
 }
 
@@ -419,16 +419,24 @@ h2 {
     }
 
     .navigation-arrows {
-        top: 195px;
+        top: 50px;
     }
 
     .arrow-button {
-        /* font-size: 14px; */
+        font-size: 14px;
     }
 
     .close-button {
         width: 20px;
         height: 18px;
+    }
+
+    .tab {
+        font-size: 12px;
+    }
+
+    .tab-content1 {
+        font-size: 14px;
     }
 }
 
@@ -460,7 +468,7 @@ h2 {
     }
 
     .navigation-arrows {
-        /* top: 155px; */
+        top: 50px;
     }
 
     .arrow-button {
@@ -470,5 +478,13 @@ h2 {
     .close-button {
         width: 17px;
         height: 15px;
+    }
+
+    .aboutPokemon td {
+        padding: 5px;
+    }
+
+    .tab-content1 {
+        font-size: 12px;
     }
 }

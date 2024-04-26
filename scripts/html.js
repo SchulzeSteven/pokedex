@@ -1,33 +1,29 @@
 function generatePokemonCardHtml(id, pokemonName, cardBackgroundColor, headerHTML, bodyHTML, currentPokemon) {
     const pokemonTypesHtml = generatePokemonTypesHtml(currentPokemon.types);
     const formattedId = id.toString().padStart(3, '0');
-    // Direktes Umrechnen der Höhe und des Gewichts
     const heightInMeters = (currentPokemon.height / 10) + ' m';
     const weightInKilograms = (currentPokemon.weight / 10) + ' kg';
 
     return `
     <div id="pokemon-card-${id}" class="card" onclick="toggleActiveClass(this)" style="background-color: ${cardBackgroundColor};">
-        <div class="card__face card__front">
-            ${headerHTML}
-            ${bodyHTML}
-        </div>
+        <div class="card__face card__front">${headerHTML}${bodyHTML}</div>
         <div class="card__face card__back">
-        <img src="img/2.svg" class="pokeball-bg1 align-self-center" alt="">
+            <img src="img/2.svg" class="pokeball-bg1 align-self-center" alt="">
             <div class="h2-back">
                 <h2>${pokemonName}</h2><span>#${formattedId}</span>
             </div>
             <div class="types-back">
                 ${pokemonTypesHtml}
             </div>
-            <img id="pokemon-image-back-${id}" class="image-back"
-                src="${currentPokemon.sprites.other['official-artwork'].front_default}" alt="${pokemonName}">
+            <img id="pokemon-image-back-${id}" class="image-back" src="${currentPokemon.sprites.other['official-artwork'].front_default}" alt="${pokemonName}">
             <div class="second-area">
                 <div class="tab-content">
-                    <div id="showAbout" class="about tab" onclick="showAbout()">About</div>
-                    <div id="showStats" class="stats tab" onclick="showStats()">Stats</div> 
-                    <div id="showMoves" class="moves tab" onclick="showMoves()">Moves</div> 
+                    <div class="about tab" onclick="showAbout(${id})">About</div>
+                    <div class="stats tab" onclick="showStats(${id})">Stats</div>
+                    <div class="moves tab" onclick="showMoves(${id})">Moves</div>
                 </div>
-                <div class="tab-content1" id="aboutTab${id}">
+                <div id="aboutTab${id}" class="tab-detail">
+                    <!-- About content here -->
                     <div class="aboutPokemon"> 
                         <table>
                             <tr>
@@ -45,10 +41,16 @@ function generatePokemonCardHtml(id, pokemonName, cardBackgroundColor, headerHTM
                         </table>
                     </div>
                 </div>
+                <div id="statsTab${id}" class="tab-detail" style="display: none;">
+                    <canvas id="myChart${id}"></canvas>
+                </div>
+                <div id="movesTab${id}" class="tab-detail" style="display: none;">
+                    <!-- Moves Content Here -->
+                </div>
                 <div class="navigation-arrows">
-                    <button onclick="navigateBack()" class="arrow-button" id="back-arrow">&#8678</button>
-                    <div class="close-button" onclick="closeCard(event, this)"></div>
-                    <button onclick="navigateForward()" class="arrow-button" id="forward-arrow">&#8680</button>
+                <button onclick="navigateBack()" class="arrow-button" id="back-arrow">&#8678</button>
+                <div class="close-button" onclick="closeCard(event, this)"></div>
+                <button onclick="navigateForward()" class="arrow-button" id="forward-arrow">&#8680</button>
                 </div>
             </div>
         </div>
