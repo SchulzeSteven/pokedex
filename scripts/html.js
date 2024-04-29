@@ -45,10 +45,11 @@ function generatePokemonTypesHtml(types) {
 }
 
 
-function createPokemonDetailOverlay(pokemon) {
+function createPokemonDetailOverlay(pokemon, resetTab = false) {
     const overlay = document.createElement('div');
     overlay.classList.add('active-overlay', 'card');
     overlay.style.backgroundColor = typeColors[pokemon.types[0].type.name];
+    overlay.id = `pokemon-card-${pokemon.id}`;
 
     const pokemonName = pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1);
     const formattedId = ("000" + pokemon.id).slice(-3);
@@ -68,12 +69,11 @@ function createPokemonDetailOverlay(pokemon) {
         <img id="pokemon-image-back-${pokemon.id}" class="image-back" src="${pokemon.sprites.other['official-artwork'].front_default}" alt="${pokemonName}">
         <div class="second-area">
             <div class="tab-content">
-                <div class="about tab" data-id="${pokemon.id}" onclick="showAbout(${pokemon.id})">About</div>
-                <div class="stats tab" data-id="${pokemon.id}" onclick="showStats(${pokemon.id})">Stats</div>
-                <div class="moves tab" data-id="${pokemon.id}" onclick="showMoves(${pokemon.id})">Moves</div>
+                <div id="aboutTabButton${pokemon.id}" class="about tab" data-id="${pokemon.id}" onclick="showAbout(${pokemon.id})">About</div>
+                <div id="statsTabButton${pokemon.id}" class="stats tab" data-id="${pokemon.id}" onclick="showStats(${pokemon.id})">Stats</div>
+                <div id="movesTabButton${pokemon.id}" class="moves tab" data-id="${pokemon.id}" onclick="showMoves(${pokemon.id})">Moves</div>
             </div>
-            <div id="aboutTab${pokemon.id}" class="tab-detail">
-                <!-- About content here -->
+            <div id="aboutTab${pokemon.id}" class="tab-detail about1">
                 <div class="aboutPokemon"> 
                     <table>
                         <tr>
@@ -91,7 +91,7 @@ function createPokemonDetailOverlay(pokemon) {
                     </table>
                 </div>
             </div>
-            <div id="statsTab${pokemon.id}" class="tab-detail" style="display: none;">
+            <div id="statsTab${pokemon.id}" class="tab-detail stats1" style="display: none;">
                 <canvas id="myChart${pokemon.id}"></canvas>
             </div>
             <div id="movesTab${pokemon.id}" class="tab-detail" style="display: none;">
@@ -105,5 +105,14 @@ function createPokemonDetailOverlay(pokemon) {
         </div>
     `;
 
+    document.body.appendChild(overlay);
+    showBackgroundBlur();
+    if (resetTab) {
+        setActiveTab('about', pokemon.id);
+        showAbout(pokemon.id);
+    } else {
+        setActiveTab(activeTab, pokemon.id); // Beibehalten des aktuellen Tabs
+        displayActiveTabContent(pokemon.id); // Diese Funktion sollte den Inhalt des aktiven Tabs anzeigen
+    }
     return overlay;
 }

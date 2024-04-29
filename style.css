@@ -309,7 +309,7 @@ h2 {
     display: flex;
     justify-content: space-between;
     padding: 16px;
-    top: 70px;
+    top: 20%;
     position: relative;
 }
 
@@ -376,8 +376,9 @@ h2 {
     position: relative;
     display: flex;
     justify-content: space-around;
-    top: 45px;
+    top: 15%;
     font-size: 16px;
+    text-align: center;
 }
 
 .tab {
@@ -387,10 +388,41 @@ h2 {
     cursor: pointer;
 }
 
+.active-tab {
+    text-decoration: underline;  /* Unterstreicht den aktiven Tab */
+    font-weight: bold;  /* Optional: Macht den Text fett */
+    text-underline-position: under;
+}
+
 .tab:hover {
-    background-color: lightgrey;
     text-decoration: underline;
     text-underline-position: under;
+}
+
+.about1 {
+    margin-bottom: 11px;
+}
+
+#movesContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    max-height: 143px; /* oder eine andere Höhe, die zu deinem Layout passt */
+    overflow-y: auto; /* Fügt einen vertikalen Scrollbalken hinzu, wenn nötig */
+    font-size: 10px;
+    text-decoration: underline;
+    padding-left: 15%;
+}
+
+.moveItem {
+    flex: 0 0 50%; /* Jedes Item nimmt 50% der Breite des Containers ein, sodass zwei nebeneinander passen */
+    box-sizing: border-box;
+    padding: 5px;
+    background: url(./img/moves.png) no-repeat center left;
+    background-size: 16px;
+    text-align: start;
+    padding-left: 20px;
 }
 
 .aboutPokemon td {
@@ -398,8 +430,8 @@ h2 {
 }
 @media only screen and (max-width: 500px) {
     .card.active-overlay {
-        width: 14rem;
-        height: 21rem;
+        width: 15rem;
+        height: 23rem;
     }
 
     h2 {
@@ -422,8 +454,18 @@ h2 {
         height: 74%;
     }
 
+    #movesContainer {
+        max-height: 119px;
+        padding-left: 10%;
+    }
+
     .navigation-arrows {
-        top: 50px;
+        padding: 0px 16px;
+        top: 30%;
+    }
+
+    .about1 {
+        margin-bottom: 5px;
     }
 
     .arrow-button {
@@ -431,11 +473,16 @@ h2 {
     }
 
     .close-button {
-        width: 20px;
-        height: 18px;
+        width: 16px;
+        height: 19px;
     }
 
     .tab {
+        font-size: 14px;
+    }
+
+    .tab-detail {
+        top: 18%;
         font-size: 12px;
     }
 
@@ -445,9 +492,21 @@ h2 {
 }
 
 @media only screen and (max-width: 400px) {
+    b, strong {
+        font-weight: 500;
+    }
+
     .card.active-overlay {
         width: 12rem;
         height: 17rem;
+    }
+
+    .about1 {
+        margin-bottom: 11px;
+    }
+
+    .stats1 {
+        width: 98%;
     }
 
     h2 {
@@ -472,7 +531,7 @@ h2 {
     }
 
     .navigation-arrows {
-        top: 50px;
+        top: 20%;
     }
 
     .arrow-button {
@@ -489,6 +548,10 @@ h2 {
     }
 
     .tab-content1 {
+        font-size: 12px;
+    }
+
+    .tab {
         font-size: 12px;
     }
 }

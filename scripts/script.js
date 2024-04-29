@@ -1,5 +1,6 @@
 let pokemonAmount = 30;
 let id = 1;
+let activeTab = 'about';
 let lastSearchTerm = null;
 let filteredPokemonIds = [];
 let filterIsActive = false;
@@ -47,10 +48,12 @@ function loadMore() {
 
 
 async function renderPokemon(id, content) {
-    let url = `https://pokeapi.co/api/v2/pokemon/${id}`;
-    let response = await fetch(url);
-    let currentPokemon = await response.json();
-    content.innerHTML += PokemonRender(currentPokemon);
+    let pokemonData = await getPokemonData(id);
+    if (pokemonData) {
+        content.innerHTML += PokemonRender(pokemonData);
+    } else {
+        console.error(`Failed to load data for Pokemon ID ${id}`);
+    }
 }
 
 
@@ -157,14 +160,16 @@ async function searchAndRenderPokemons(searchTerm, content) {
 
 async function getPokemonData(id) {
     if (!pokemonCache[id]) {
+        const url = `https://pokeapi.co/api/v2/pokemon/${id}`;
         try {
-            const url = `https://pokeapi.co/api/v2/pokemon/${id}`;
             const response = await fetch(url);
             if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
             const data = await response.json();
-            pokemonCache[id] = data; // Stellen Sie sicher, dass das Cache-Update hier passiert.
+            pokemonCache[id] = data;
+            /* console.log(`Pokemon data cached for ID ${id}`);  // Bestätigen, dass die Daten im Cache gespeichert sind */
         } catch (e) {
             console.error('Error fetching data:', e);
+            return null;
         }
     }
     return pokemonCache[id];
@@ -185,6 +190,7 @@ function hideBackgroundBlur() {
 
 function toggleActiveClass(clickedElement) {
     const pokemonId = parseInt(clickedElement.id.replace('pokemon-card-', ''), 10);
+    updatePokemonCard(pokemonId, true);
     const pokemonData = pokemonCache[pokemonId];
 
     if (!pokemonData) {
@@ -193,10 +199,14 @@ function toggleActiveClass(clickedElement) {
     }
 
     removeActiveOverlay();
-
     const overlay = createPokemonDetailOverlay(pokemonData);
     document.body.appendChild(overlay);
     showBackgroundBlur();
+
+    // Setze den aktiven Tab auf 'about' und aktualisiere die Anzeige
+    activeTab = 'about'; // Stelle sicher, dass 'about' als Standard gesetzt wird
+    setActiveTab(activeTab, pokemonId);
+    showAbout(pokemonId);
 }
 
 
@@ -218,11 +228,26 @@ document.addEventListener('DOMContentLoaded', () => {
         </label>
     `).join('');
     typeOptionsContainer.innerHTML = typeCheckboxHtml;
+
+    // Event-Listener für das Schließen des Menüs, wenn die Maus das Menü verlässt
+    let timeoutId;  // Variable für die Verzögerung
+    typeOptionsContainer.addEventListener('mouseleave', () => {
+        // Setzt einen Timeout, um das Menü nach 500 Millisekunden zu schließen
+        timeoutId = setTimeout(() => {
+            typeOptionsContainer.style.display = 'none';
+        }, 200);
+    });
+    typeOptionsContainer.addEventListener('mouseenter', () => {
+        // Bricht den Timeout ab, wenn die Maus zurückkehrt
+        clearTimeout(timeoutId);
+    });
+
     // Initialisieren der Klick-Event-Listener für jede Pokémon-Karte
     const cards = document.querySelectorAll('.card');
     cards.forEach(card => {
         card.onclick = () => toggleActiveClass(card);
     });
+
     // Event-Listener für das Schließen der Karte durch den Schließbutton
     document.body.addEventListener('click', function(event) {
         if (event.target.classList.contains('close-button') || event.target.closest('.close-button')) {
@@ -272,28 +297,25 @@ async function filterAndRenderPokemons(checkedTypes, content) {
 
 
 function showAbout(id) {
-    hideAllTabs(id);
-    document.getElementById(`aboutTab${id}`).style.display = 'flex';
+    activeTab = 'about';
+    updateActiveTab(id);
+    setActiveTab(activeTab, id);
 }
-
 
 function showStats(id) {
-    hideAllTabs(id);
-    const statsTab = document.getElementById(`statsTab${id}`);
-    const pokemon = pokemonCache[id]; // Stellen Sie sicher, dass diese Zeile vorhanden ist und korrekt funktioniert.
-    if (statsTab && pokemon) { // Überprüfen Sie sowohl das Tab als auch das Pokémon-Objekt.
-        statsTab.style.display = 'flex'; // Zeige nur den Stats-Tab
-        if (!statsTab.classList.contains('initialized')) {
-            renderStatsPokemon(pokemon, id); // Stellen Sie sicher, dass das Pokémon-Objekt übergeben wird.
-            statsTab.classList.add('initialized'); // Markiere als initialisiert
-        }
-    }
+    activeTab = 'stats';
+    updateActiveTab(id);
+    setActiveTab(activeTab, id);
 }
 
-
 function showMoves(id) {
-    hideAllTabs(id);
-    document.getElementById(`movesTab${id}`).style.display = 'flex';
+    if (activeTab === 'moves' && document.getElementById(`movesTab${id}`).style.display === 'flex') {
+        // Verhindert das Neuladen der Moves, wenn der Tab bereits aktiv ist
+        return;
+    }
+    activeTab = 'moves';
+    updateActiveTab(id);
+    setActiveTab(activeTab, id);
 }
 
 
@@ -304,6 +326,20 @@ function hideAllTabs(id) {
             element.style.display = 'none';
         }
     });
+}
+
+
+function setActiveTab(tabName, id) {
+    // Entferne die aktive Tab-Klasse von allen Tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active-tab');
+    });
+
+    // Füge die aktive Tab-Klasse zum ausgewählten Tab hinzu
+    const activeTabElement = document.getElementById(`${tabName}TabButton${id}`);
+    if (activeTabElement) {
+        activeTabElement.classList.add('active-tab');
+    }
 }
 
 
@@ -372,32 +408,97 @@ async function navigateForward() {
 
 
 function getCurrentPokemonId() {
-    const activeCard = document.querySelector('.active-overlay'); // Dies sollte das aktive Karten-Element sein
-    if (!activeCard) {
-        console.error("No active card found");
+    const activeOverlay = document.querySelector('.active-overlay');
+    if (!activeOverlay) {
+        console.error("No active overlay found");
         return null;
     }
-    const idMatch = activeCard.id.match(/pokemon-card-(\d+)/);
-    return idMatch ? parseInt(idMatch[1], 10) : null;
+    // Stellen Sie sicher, dass das ID-Format richtig erkannt wird. Angenommen, die ID sieht so aus: "pokemon-card-42"
+    const idMatch = activeOverlay.id.match(/pokemon-card-(\d+)/);
+    if (idMatch && idMatch[1]) {
+        return parseInt(idMatch[1], 10);
+    } else {
+        console.error("Failed to extract Pokemon ID from active overlay");
+        return null;
+    }
 }
 
 
-async function updatePokemonCard(pokemonId) {
+async function updatePokemonCard(pokemonId, resetTab = false) {  // Standardmäßig 'false'
     const pokemonData = await getPokemonData(pokemonId);
     if (!pokemonData) {
         console.error('Failed to load Pokemon data for ID:', pokemonId);
         return;
     }
-    const activeCard = document.querySelector('.active-overlay');
-    if (activeCard) activeCard.remove();  // Remove the current active card
-    const container = document.createElement('div');
-    container.innerHTML = PokemonRender(pokemonData);
-    const newCard = container.firstElementChild;
-    if (newCard) {
-        newCard.classList.add('active-overlay');
-        document.body.appendChild(newCard);
-        showBackgroundBlur();
+
+    removeActiveOverlay();
+    const overlay = createPokemonDetailOverlay(pokemonData);
+    document.body.appendChild(overlay);
+    showBackgroundBlur();
+
+    if (resetTab) {
+        activeTab = 'about';
+    }
+
+    setActiveTab(activeTab, pokemonId);
+    displayActiveTabContent(pokemonId);
+}
+
+
+function displayActiveTabContent(pokemonId) {
+    if (activeTab === 'stats') {
+        showStats(pokemonId);
+    } else if (activeTab === 'moves') {
+        showMoves(pokemonId);
     } else {
-        console.error('Error: The new card element was not created correctly.');
+        showAbout(pokemonId);
+    }
+}
+
+
+function renderMoves(pokemon, id) {
+    const movesContainer = document.getElementById(`movesTab${id}`);
+    if (!movesContainer) {
+        console.error('Moves tab container not found');
+        return;
+    }
+
+    // Leere den vorhandenen Inhalt
+    movesContainer.innerHTML = '';
+
+    // Erstelle das Flex-Container-Element für die Moves
+    const movesList = document.createElement('div');
+    movesList.id = 'movesContainer';
+
+    pokemon.moves.forEach(moveEntry => {
+        const moveItem = document.createElement('div');
+        moveItem.classList.add('moveItem');
+        moveItem.textContent = moveEntry.move.name.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '); // formatiere den Namen
+        movesList.appendChild(moveItem);
+    });
+
+    movesContainer.appendChild(movesList);
+}
+
+
+function updateActiveTab(id) {
+    hideAllTabs(id);
+    const tabDetail = document.getElementById(`${activeTab}Tab${id}`);
+    if (tabDetail) {
+        tabDetail.style.display = 'flex';
+
+        if (activeTab === 'stats') {
+            const pokemon = pokemonCache[id];
+            if (pokemon && pokemon.stats) {
+                const base_stat = pokemon.stats.map(stat => stat.base_stat);
+                const name_stat = pokemon.stats.map(stat => stat.stat.name);
+                renderChart(base_stat, name_stat, id); // Stelle sicher, dass diese Funktion aufgerufen wird
+            }
+        } else if (activeTab === 'moves') {
+            const pokemon = pokemonCache[id];
+            if (pokemon) {
+                renderMoves(pokemon, id); // Lade Moves, wenn das Pokémon gewechselt wird
+            }
+        }
     }
 }

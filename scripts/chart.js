@@ -1,7 +1,8 @@
+let chartInstance = null;
+
 function renderChart(base_stat, name_stat, id) {
     const canvasId = `myChart${id}`;
     const canvas = document.getElementById(canvasId);
-
     if (!canvas) {
         console.error('Canvas element not found:', canvasId);
         return;
@@ -13,7 +14,13 @@ function renderChart(base_stat, name_stat, id) {
         return;
     }
 
-    new Chart(ctx, {
+    // Zerstöre die alte Chart-Instanz, falls vorhanden
+    if (chartInstance) {
+        chartInstance.destroy();
+    }
+
+    // Erstelle ein neues Chart
+    chartInstance = new Chart(ctx, {
         type: "bar",
         data: {
             labels: name_stat,
