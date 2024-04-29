@@ -50,10 +50,7 @@ async function renderPokemon(id, content) {
     let url = `https://pokeapi.co/api/v2/pokemon/${id}`;
     let response = await fetch(url);
     let currentPokemon = await response.json();
-
-    console.log('Loaded Pokemon', currentPokemon);
     content.innerHTML += PokemonRender(currentPokemon);
-    updatePokemonDetails(currentPokemon, id);
 }
 
 
@@ -161,10 +158,11 @@ async function searchAndRenderPokemons(searchTerm, content) {
 async function getPokemonData(id) {
     if (!pokemonCache[id]) {
         try {
-            let url = `https://pokeapi.co/api/v2/pokemon/${id}`;
-            let response = await fetch(url);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            pokemonCache[id] = await response.json();
+            const url = `https://pokeapi.co/api/v2/pokemon/${id}`;
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            const data = await response.json();
+            pokemonCache[id] = data; // Stellen Sie sicher, dass das Cache-Update hier passiert.
         } catch (e) {
             console.error('Error fetching data:', e);
         }
@@ -185,23 +183,28 @@ function hideBackgroundBlur() {
 }
 
 
-function toggleActiveClass(element) {
-    const isActive = element.classList.contains('active-overlay');
-    if (!isActive) {
-        const clone = element.cloneNode(true);
-        clone.classList.add('active-overlay');
-        document.body.appendChild(clone);
-        showBackgroundBlur();
+function toggleActiveClass(clickedElement) {
+    const pokemonId = parseInt(clickedElement.id.replace('pokemon-card-', ''), 10);
+    const pokemonData = pokemonCache[pokemonId];
+
+    if (!pokemonData) {
+        console.error('No data available for Pokemon ID:', pokemonId);
+        return;
     }
+
+    removeActiveOverlay();
+
+    const overlay = createPokemonDetailOverlay(pokemonData);
+    document.body.appendChild(overlay);
+    showBackgroundBlur();
 }
 
 
-function closeCard(event) {
-    event.stopPropagation(); // Stoppe die Weiterleitung des Events
-    const card = document.querySelector('.active-overlay'); // Wähle das aktive Overlay-Element
-    if (card) {
-        card.remove(); // Entferne das Element direkt
-        hideBackgroundBlur(); // Sicherstellen, dass der Hintergrund-Blur ebenfalls ausgeblendet wird
+function removeActiveOverlay() {
+    const existingOverlay = document.querySelector('.active-overlay');
+    if (existingOverlay) {
+        existingOverlay.remove();
+        hideBackgroundBlur();
     }
 }
 
@@ -223,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event-Listener für das Schließen der Karte durch den Schließbutton
     document.body.addEventListener('click', function(event) {
         if (event.target.classList.contains('close-button') || event.target.closest('.close-button')) {
-            closeCard(event);
+            removeActiveOverlay(event);
         }
     });
 });
@@ -268,39 +271,31 @@ async function filterAndRenderPokemons(checkedTypes, content) {
 }
 
 
-function updatePokemonDetails(pokemonData, id) {
-    document.getElementById(`aboutExperience${id}`).textContent = pokemonData.base_experience;
-    document.getElementById(`aboutHeight${id}`).textContent = (pokemonData.height / 10) + ' m';
-    document.getElementById(`aboutWeight${id}`).textContent = (pokemonData.weight / 10) + ' kg';
-    showAbout(id);
-}
-
-
 function showAbout(id) {
     hideAllTabs(id);
-    const aboutTab = document.getElementById(`aboutTab${id}`);
-    if (aboutTab) {
-        aboutTab.style.display = 'flex';
-    }
+    document.getElementById(`aboutTab${id}`).style.display = 'flex';
 }
+
 
 function showStats(id) {
     hideAllTabs(id);
     const statsTab = document.getElementById(`statsTab${id}`);
-    if (statsTab) {
-        statsTab.style.display = 'flex';
-        // Hier könnten Sie zusätzliche Logik einfügen, um die Statistiken zu laden oder zu aktualisieren
+    const pokemon = pokemonCache[id]; // Stellen Sie sicher, dass diese Zeile vorhanden ist und korrekt funktioniert.
+    if (statsTab && pokemon) { // Überprüfen Sie sowohl das Tab als auch das Pokémon-Objekt.
+        statsTab.style.display = 'flex'; // Zeige nur den Stats-Tab
+        if (!statsTab.classList.contains('initialized')) {
+            renderStatsPokemon(pokemon, id); // Stellen Sie sicher, dass das Pokémon-Objekt übergeben wird.
+            statsTab.classList.add('initialized'); // Markiere als initialisiert
+        }
     }
 }
 
+
 function showMoves(id) {
     hideAllTabs(id);
-    const movesTab = document.getElementById(`movesTab${id}`);
-    if (movesTab) {
-        movesTab.style.display = 'flex';
-        // Hier könnten Sie zusätzliche Logik einfügen, um die Bewegungen zu laden oder zu aktualisieren
-    }
+    document.getElementById(`movesTab${id}`).style.display = 'flex';
 }
+
 
 function hideAllTabs(id) {
     ['aboutTab', 'statsTab', 'movesTab'].forEach(tab => {
@@ -308,6 +303,35 @@ function hideAllTabs(id) {
         if (element) {
             element.style.display = 'none';
         }
+    });
+}
+
+
+function renderStatsPokemon(pokemon, id) {
+    if (!pokemon || !pokemon.stats) {
+        console.error('No stats available for Pokémon ID:', id);
+        return;
+    }
+    let base_stat = [];
+    let name_stat = [];
+    for (let stat of pokemon.stats) {
+        base_stat.push(stat.base_stat);
+        let name = stat.stat.name.charAt(0).toUpperCase() + stat.stat.name.slice(1);
+        name_stat.push(name);
+    }
+    renderChart(base_stat, name_stat, id);
+}
+
+
+function reloadTabEventListeners() {
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.removeEventListener('click'); // Entfernen Sie zuerst bestehende Listener, um Doppelbindungen zu vermeiden
+        tab.addEventListener('click', function() {
+            const action = tab.classList.contains('about') ? showAbout
+                        : tab.classList.contains('stats') ? showStats
+                        : showMoves;
+            action(tab.getAttribute('data-id')); // Stellen Sie sicher, dass `data-id` die Pokémon-ID enthält
+        });
     });
 }
 

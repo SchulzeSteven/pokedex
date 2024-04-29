@@ -121,6 +121,10 @@ h2 {
     cursor: default;
 }
 
+.active-overlay {
+    transform: translate(-50%, -50%) rotateY(0deg) scale(1.5) !important;
+}
+
 .pokemon-type {
     border-radius: 10px;
     color: black;
