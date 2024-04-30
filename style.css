@@ -309,7 +309,7 @@ h2 {
     display: flex;
     justify-content: space-between;
     padding: 16px;
-    top: 20%;
+    top: 16%;
     position: relative;
 }
 
@@ -378,7 +378,13 @@ h2 {
     justify-content: space-around;
     top: 15%;
     font-size: 16px;
+    height: 55%;
+    width: 100%;
     text-align: center;
+}
+
+#myChart {
+    transition: all 0.5s ease-in-out;
 }
 
 .tab {
@@ -397,10 +403,6 @@ h2 {
 .tab:hover {
     text-decoration: underline;
     text-underline-position: under;
-}
-
-.about1 {
-    margin-bottom: 11px;
 }
 
 #movesContainer {
@@ -428,6 +430,10 @@ h2 {
 .aboutPokemon td {
     padding: 10px;
 }
+
+.about1 {
+    text-align: left;
+}
 @media only screen and (max-width: 500px) {
     .card.active-overlay {
         width: 15rem;
@@ -451,7 +457,7 @@ h2 {
     }
 
     .second-area {
-        height: 74%;
+        height: 69%
     }
 
     #movesContainer {
@@ -461,11 +467,7 @@ h2 {
 
     .navigation-arrows {
         padding: 0px 16px;
-        top: 30%;
-    }
-
-    .about1 {
-        margin-bottom: 5px;
+        top: 20%;
     }
 
     .arrow-button {
@@ -482,8 +484,10 @@ h2 {
     }
 
     .tab-detail {
-        top: 18%;
+        top: 15%;
         font-size: 12px;
+        height: 57%;
+        width: 100%;
     }
 
     .tab-content1 {
@@ -496,17 +500,22 @@ h2 {
         font-weight: 500;
     }
 
-    .card.active-overlay {
-        width: 12rem;
-        height: 17rem;
+    #movesContainer {
+        max-height: 127px;
+        padding-left: 10%;
     }
 
-    .about1 {
-        margin-bottom: 11px;
+    .moveItem {
+        font-size: 8px;
+    }
+
+    .card.active-overlay {
+        width: 12rem;
+        height: 20rem;
     }
 
     .stats1 {
-        width: 98%;
+        width: 100%;
     }
 
     h2 {
@@ -527,11 +536,11 @@ h2 {
     }
 
     .second-area {
-        height: 75%;
+        height: 73%;
     }
 
     .navigation-arrows {
-        top: 20%;
+        top: 16%;
     }
 
     .arrow-button {
@@ -551,7 +560,16 @@ h2 {
         font-size: 12px;
     }
 
+    .about1 {
+        top: 24% !important;
+    }
+
     .tab {
         font-size: 12px;
+    }
+
+    .tab-detail {
+        height: 62%;
+        top: 15%;
     }
 }

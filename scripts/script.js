@@ -6,25 +6,7 @@ let filteredPokemonIds = [];
 let filterIsActive = false;
 let pokemonCache = {};
 let searchTimeout;
-let typeColors = {
-    normal: 'rgb(168,168,153)',
-    fire: 'rgb(229,59,25)',
-    water: 'rgb(39,139,204)',
-    electric: 'rgb(229,198,0)',
-    grass: 'rgb(88,169,81)',
-    ice: 'rgb(108, 239, 251)',
-    fighting: 'rgb(167,76,61)',
-    poison: 'rgb(134,74,184)',
-    ground: 'rgb(149,104,51)',
-    flying: 'rgb(152, 214, 251)',
-    psychic: 'rgb(229,89,115)',
-    bug: 'rgb(131,173,37)',
-    rock: 'rgb(168,153,91)',
-    ghost: 'rgb(152, 108, 251)',
-    dragon: 'rgb(176, 152, 251)',
-    steel: 'rgb(196, 206, 214)',
-    fairy: 'rgb(212,128,207)',
-};
+let typeColors = { normal: 'rgb(168,168,153)', fire: 'rgb(229,59,25)', water: 'rgb(39,139,204)', electric: 'rgb(229,198,0)', grass: 'rgb(88,169,81)', ice: 'rgb(108, 239, 251)', fighting: 'rgb(167,76,61)', poison: 'rgb(134,74,184)', ground: 'rgb(149,104,51)', flying: 'rgb(152, 214, 251)', psychic: 'rgb(229,89,115)', bug: 'rgb(131,173,37)', rock: 'rgb(168,153,91)', ghost: 'rgb(152, 108, 251)', dragon: 'rgb(176, 152, 251)', steel: 'rgb(196, 206, 214)', fairy: 'rgb(212,128,207)', };
 
 
 async function init() {
@@ -63,6 +45,16 @@ function setSpeciesColor(currentPokemon, index) {
 }
 
 
+function getSpecies(currentPokemon, index) {
+    if (currentPokemon.types && currentPokemon.types.length > index) {
+        let species = currentPokemon.types[index].type.name;
+        return species.charAt(0).toUpperCase() + species.slice(1);
+    }
+    return '';
+}
+
+
+
 function getSpeciesColors(currentPokemon) {
     let speciesColors = {};
     speciesColors.species1Color = setSpeciesColor(currentPokemon, 0);
@@ -90,15 +82,6 @@ function PokemonRender(currentPokemon) {
 }
 
 
-function getSpecies(currentPokemon, index) {
-    if (currentPokemon.types && currentPokemon.types.length > index) {
-        let species = currentPokemon.types[index].type.name;
-        return species.charAt(0).toUpperCase() + species.slice(1);
-    }
-    return '';
-}
-
-
 async function searchAndSuggestPokemon() {
     const searchTerm = document.getElementById('search').value.toLowerCase();
     if (searchTerm === lastSearchTerm) return;
@@ -114,20 +97,6 @@ async function searchAndSuggestPokemon() {
             document.getElementById('loadMoreButton').style.display = 'block';
             filterIsActive = false;
         }
-    }
-}
-
-
-async function initializeSearch(searchTerm) {
-    let content = document.getElementById('pokemon-list');
-    content.innerHTML = ''; // Lösche vorhandenen Inhalt
-    if (searchTerm.length === 0) {
-        await loadInitialPokemons(content);
-        document.getElementById('loadMoreButton').style.display = 'block';
-        filterIsActive = false; // Deaktiviere den Filtermodus
-    } else {
-        await searchAndRenderPokemons(searchTerm, content);
-        filterIsActive = true; // Aktiviere den Filtermodus für die Navigation
     }
 }
 
@@ -166,7 +135,6 @@ async function getPokemonData(id) {
             if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
             const data = await response.json();
             pokemonCache[id] = data;
-            /* console.log(`Pokemon data cached for ID ${id}`);  // Bestätigen, dass die Daten im Cache gespeichert sind */
         } catch (e) {
             console.error('Error fetching data:', e);
             return null;
@@ -176,85 +144,27 @@ async function getPokemonData(id) {
 }
 
 
-function showBackgroundBlur() {
-    const background = document.getElementById('background-blur');
-    background.style.display = 'block';
-}
-
-
-function hideBackgroundBlur() {
-    const background = document.getElementById('background-blur');
-    background.style.display = 'none';
-}
-
-
 function toggleActiveClass(clickedElement) {
     const pokemonId = parseInt(clickedElement.id.replace('pokemon-card-', ''), 10);
-    updatePokemonCard(pokemonId, true);
     const pokemonData = pokemonCache[pokemonId];
 
+    // Überprüfe, ob Daten verfügbar sind, bevor das Overlay entfernt oder erstellt wird
     if (!pokemonData) {
         console.error('No data available for Pokemon ID:', pokemonId);
         return;
     }
-
     removeActiveOverlay();
+
+    // Erstelle und zeige das neue Overlay
     const overlay = createPokemonDetailOverlay(pokemonData);
     document.body.appendChild(overlay);
     showBackgroundBlur();
 
-    // Setze den aktiven Tab auf 'about' und aktualisiere die Anzeige
-    activeTab = 'about'; // Stelle sicher, dass 'about' als Standard gesetzt wird
+    // Setze den aktiven Tab auf 'about' und zeige entsprechenden Inhalt
+    activeTab = 'about';
     setActiveTab(activeTab, pokemonId);
     showAbout(pokemonId);
 }
-
-
-function removeActiveOverlay() {
-    const existingOverlay = document.querySelector('.active-overlay');
-    if (existingOverlay) {
-        existingOverlay.remove();
-        hideBackgroundBlur();
-    }
-}
-
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Laden und Anzeigen der Typ-Optionen für Filter
-    const typeOptionsContainer = document.getElementById('type-options');
-    const typeCheckboxHtml = Object.keys(typeColors).map(type => `
-        <label>
-            <input type="checkbox" name="type" value="${type}" onchange="filterByType()"> ${type.charAt(0).toUpperCase() + type.slice(1)}
-        </label>
-    `).join('');
-    typeOptionsContainer.innerHTML = typeCheckboxHtml;
-
-    // Event-Listener für das Schließen des Menüs, wenn die Maus das Menü verlässt
-    let timeoutId;  // Variable für die Verzögerung
-    typeOptionsContainer.addEventListener('mouseleave', () => {
-        // Setzt einen Timeout, um das Menü nach 500 Millisekunden zu schließen
-        timeoutId = setTimeout(() => {
-            typeOptionsContainer.style.display = 'none';
-        }, 200);
-    });
-    typeOptionsContainer.addEventListener('mouseenter', () => {
-        // Bricht den Timeout ab, wenn die Maus zurückkehrt
-        clearTimeout(timeoutId);
-    });
-
-    // Initialisieren der Klick-Event-Listener für jede Pokémon-Karte
-    const cards = document.querySelectorAll('.card');
-    cards.forEach(card => {
-        card.onclick = () => toggleActiveClass(card);
-    });
-
-    // Event-Listener für das Schließen der Karte durch den Schließbutton
-    document.body.addEventListener('click', function(event) {
-        if (event.target.classList.contains('close-button') || event.target.closest('.close-button')) {
-            removeActiveOverlay(event);
-        }
-    });
-});
 
 
 function toggleFilterMenu() {
@@ -297,16 +207,26 @@ async function filterAndRenderPokemons(checkedTypes, content) {
 
 
 function showAbout(id) {
+    if (activeTab === 'about' && document.getElementById(`aboutTab${id}`).style.display === 'flex') {
+        // Verhindert das Neuladen der Moves, wenn der Tab bereits aktiv ist
+        return;
+    }
     activeTab = 'about';
     updateActiveTab(id);
     setActiveTab(activeTab, id);
 }
 
+
 function showStats(id) {
+    if (activeTab === 'stats' && document.getElementById(`statsTab${id}`).style.display === 'flex') {
+        // Verhindert das Neuladen der Moves, wenn der Tab bereits aktiv ist
+        return;
+    }
     activeTab = 'stats';
     updateActiveTab(id);
     setActiveTab(activeTab, id);
 }
+
 
 function showMoves(id) {
     if (activeTab === 'moves' && document.getElementById(`movesTab${id}`).style.display === 'flex') {
@@ -343,35 +263,6 @@ function setActiveTab(tabName, id) {
 }
 
 
-function renderStatsPokemon(pokemon, id) {
-    if (!pokemon || !pokemon.stats) {
-        console.error('No stats available for Pokémon ID:', id);
-        return;
-    }
-    let base_stat = [];
-    let name_stat = [];
-    for (let stat of pokemon.stats) {
-        base_stat.push(stat.base_stat);
-        let name = stat.stat.name.charAt(0).toUpperCase() + stat.stat.name.slice(1);
-        name_stat.push(name);
-    }
-    renderChart(base_stat, name_stat, id);
-}
-
-
-function reloadTabEventListeners() {
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.removeEventListener('click'); // Entfernen Sie zuerst bestehende Listener, um Doppelbindungen zu vermeiden
-        tab.addEventListener('click', function() {
-            const action = tab.classList.contains('about') ? showAbout
-                        : tab.classList.contains('stats') ? showStats
-                        : showMoves;
-            action(tab.getAttribute('data-id')); // Stellen Sie sicher, dass `data-id` die Pokémon-ID enthält
-        });
-    });
-}
-
-
 async function navigateBack() {
     const currentId = getCurrentPokemonId();
     if (!currentId) return;
@@ -389,11 +280,12 @@ async function navigateBack() {
     updatePokemonCard(newId);
 }
 
+
 async function navigateForward() {
     const currentId = getCurrentPokemonId();
     if (!currentId) return;
     let currentIndex, newId;
-    
+
     if (filterIsActive) {
         currentIndex = filteredPokemonIds.indexOf(currentId);
         newId = currentIndex < filteredPokemonIds.length - 1 ? filteredPokemonIds[currentIndex + 1] : filteredPokemonIds[0];
@@ -424,7 +316,7 @@ function getCurrentPokemonId() {
 }
 
 
-async function updatePokemonCard(pokemonId, resetTab = false) {  // Standardmäßig 'false'
+async function updatePokemonCard(pokemonId, resetTab = false) {
     const pokemonData = await getPokemonData(pokemonId);
     if (!pokemonData) {
         console.error('Failed to load Pokemon data for ID:', pokemonId);

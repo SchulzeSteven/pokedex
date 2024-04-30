@@ -1,5 +1,11 @@
 let chartInstance = null;
 
+
+function capitalizeLabel(label) {
+    return label.charAt(0).toUpperCase() + label.slice(1);
+}
+
+
 function renderChart(base_stat, name_stat, id) {
     const canvasId = `myChart${id}`;
     const canvas = document.getElementById(canvasId);
@@ -23,7 +29,7 @@ function renderChart(base_stat, name_stat, id) {
     chartInstance = new Chart(ctx, {
         type: "bar",
         data: {
-            labels: name_stat,
+            labels: name_stat.map(capitalizeLabel),
             datasets: [
                 {
                     axis: "y",
@@ -53,6 +59,8 @@ function renderChart(base_stat, name_stat, id) {
             ],
         },
         options: {
+            responsive: true,
+            maintainAspectRatio: false,
             scales: {
                 y: {
                     beginAtZero: true,
