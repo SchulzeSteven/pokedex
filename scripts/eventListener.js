@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeMouseEvents();
     initializeCardClickListeners();
     initializeCloseButtonListener();
+    initializeScrollToTopButton();
 });
 
 
@@ -57,6 +58,28 @@ async function initializeSearch(searchTerm) {
 }
 
 
+function initializeScrollToTopButton() {
+    const scrollToTopButton = document.createElement('button');
+    scrollToTopButton.id = 'scrollToTopButton';
+    scrollToTopButton.innerText = '↑';
+    scrollToTopButton.style.display = 'none'; // Versteckt den Button standardmäßig
+    scrollToTopButton.onclick = scrollToTop;
+    document.body.appendChild(scrollToTopButton);
+
+    window.addEventListener('scroll', toggleScrollButtonVisibility);
+}
+
+
+function toggleScrollButtonVisibility() {
+    const scrollToTopButton = document.getElementById('scrollToTopButton');
+    if (window.pageYOffset > 180 && !document.querySelector('.active-overlay')) {
+        scrollToTopButton.style.display = 'block';
+    } else {
+        scrollToTopButton.style.display = 'none';
+    }
+}
+
+
 function capitalize(text) {
     return text.charAt(0).toUpperCase() + text.slice(1);
 }
@@ -64,13 +87,16 @@ function capitalize(text) {
 
 function showBackgroundBlur() {
     document.getElementById('background-blur').style.display = 'block';
-    document.body.style.overflow = 'hidden'; // Verhindert das Scrollen des Hintergrunds
+    document.body.style.overflowY = 'hidden'; // Verhindert das Scrollen
+    document.body.style.paddingRight = '15px'; // Kompensiert den Bereich, den der Scrollbalken einnimmt
+    toggleScrollButtonVisibility(); // Versteckt den "Scroll to Top"-Button
 }
-
 
 function hideBackgroundBlur() {
     document.getElementById('background-blur').style.display = 'none';
-    document.body.style.overflow = 'auto'; // Stellt das normale Scroll-Verhalten wieder her
+    document.body.style.overflowY = 'auto'; // Erlaubt das Scrollen wieder
+    document.body.style.paddingRight = '0px'; // Entfernt die Kompensation
+    toggleScrollButtonVisibility(); // Zeigt den "Scroll to Top"-Button basierend auf der Scroll-Position
 }
 
 

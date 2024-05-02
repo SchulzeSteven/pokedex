@@ -166,6 +166,14 @@ function toggleActiveClass(clickedElement) {
     showAbout(pokemonId);
 }
 
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+    // Warte kurz, um den Status des Buttons nach dem Scrollen zu überprüfen
+    setTimeout(toggleScrollButtonVisibility, 150);
+}
 
 function toggleFilterMenu() {
     const filterMenu = document.getElementById('type-options');
