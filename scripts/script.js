@@ -89,7 +89,7 @@ async function searchAndSuggestPokemon() {
     if (searchTimeout) clearTimeout(searchTimeout);
     if (searchTerm.length >= 3) {
         document.getElementById('loadMoreButton').style.display = 'none';
-        searchTimeout = setTimeout(() => initializeSearch(searchTerm), 500);
+        searchTimeout = setTimeout(() => initializeSearch(searchTerm), 151);
     } else {
         document.getElementById('pokemon-list').innerHTML = '';
         if (searchTerm.length === 0) {
@@ -177,8 +177,7 @@ function scrollToTop() {
 
 function toggleFilterMenu() {
     const filterMenu = document.getElementById('type-options');
-    if (filterMenu.style.display === 'block') {
-        filterMenu.style.display = 'none';
+    if (filterMenu.style.display === 'block') {filterMenu.style.display = 'none';
     } else {
         filterMenu.style.display = 'block';
     }
@@ -215,6 +214,7 @@ async function filterAndRenderPokemons(checkedTypes, content) {
 
 
 function showAbout(id) {
+    hideAllTabs(id);
     if (activeTab === 'about' && document.getElementById(`aboutTab${id}`).style.display === 'flex') {
         // Verhindert das Neuladen der Moves, wenn der Tab bereits aktiv ist
         return;
@@ -247,8 +247,115 @@ function showMoves(id) {
 }
 
 
+async function showEvo(pokemonId) {
+    const evoTab = document.getElementById(`evoTab${pokemonId}`);
+
+    // Verhindert das Neuladen, wenn der Evo-Tab bereits angezeigt wird
+    if (activeTab === 'evo' && evoTab.style.display === 'flex') {
+        return;
+    }
+
+    // Setzt den aktiven Tab auf 'evo' und aktualisiert die Anzeige
+    activeTab = 'evo';
+    setActiveTab(activeTab, pokemonId);
+    updateActiveTab(pokemonId);
+
+    // Lädt die Evolutionsdaten
+    const evolutionData = await fetchEvolutionChain(pokemonId);
+    if (evolutionData) {
+        const evoContent = buildEvolutionChainContent(evolutionData);
+        evoTab.innerHTML = evoContent;
+    } else {
+        evoTab.innerHTML = '<div>No evolution data available.</div>';
+    }
+}
+
+
+async function fetchEvolutionChain(pokemonId) {
+    try {
+        const speciesResponse = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokemonId}/`);
+        if (!speciesResponse.ok) throw new Error('Failed to fetch species data');
+
+        const speciesData = await speciesResponse.json();
+        const evolutionChainUrl = speciesData.evolution_chain.url;
+
+        const evolutionResponse = await fetch(evolutionChainUrl);
+        if (!evolutionResponse.ok) throw new Error('Failed to fetch evolution data');
+
+        const evolutionData = await evolutionResponse.json();
+        return await fetchFullEvolutionDetails(evolutionData);
+    } catch (error) {
+        console.error('Error fetching evolution data:', error);
+        return null;
+    }
+}
+
+
+async function fetchEvolutionChain(pokemonId) {
+    try {
+        const speciesResponse = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokemonId}/`);
+        if (!speciesResponse.ok) throw new Error('Failed to fetch species data');
+
+        const speciesData = await speciesResponse.json();
+        const evolutionChainUrl = speciesData.evolution_chain.url;
+
+        const evolutionResponse = await fetch(evolutionChainUrl);
+        if (!evolutionResponse.ok) throw new Error('Failed to fetch evolution data');
+
+        const evolutionData = await evolutionResponse.json();
+        return filterEvolutionData(evolutionData.chain);
+    } catch (error) {
+        console.error('Error fetching evolution data:', error);
+        return null;
+    }
+}
+
+
+function buildEvolutionChainContent(evolutionDetails) {
+    if (!evolutionDetails || evolutionDetails.length === 0) {
+        return '<div>No evolution data available.</div>';
+    }
+
+    let htmlContent = '<div class="evolution-chain">';
+    evolutionDetails.forEach((detail) => {
+        if (detail.artwork) {
+            htmlContent += `
+                <div style="text-align: center;">
+                    <img src="${detail.artwork}" alt="${detail.name}">
+                    <div class="evo-text">${detail.name.charAt(0).toUpperCase() + detail.name.slice(1)}</div>
+                </div>
+            `;
+        }
+    });
+    
+    htmlContent += '</div>';
+    return htmlContent;
+}
+
+
+function filterEvolutionData(chain, collectedData = []) {
+    if (!chain) return collectedData;
+
+    const speciesId = chain.species.url.split("/").filter(Boolean).pop();
+    if (parseInt(speciesId) <= 151) { // Sicherstellen, dass nur Pokémon bis zur 151. Generation betrachtet werden
+        collectedData.push({
+            name: chain.species.name,
+            id: speciesId,
+            artwork: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${speciesId}.png`
+        });
+    }
+
+    // Rekursiv durch alle möglichen Evolutionen gehen
+    chain.evolves_to.forEach(evolution => {
+        filterEvolutionData(evolution, collectedData);
+    });
+
+    return collectedData;
+}
+
+
 function hideAllTabs(id) {
-    ['aboutTab', 'statsTab', 'movesTab'].forEach(tab => {
+    ['aboutTab', 'statsTab', 'movesTab', 'evoTab'].forEach(tab => {
         const element = document.getElementById(`${tab}${id}`);
         if (element) {
             element.style.display = 'none';
@@ -350,7 +457,9 @@ function displayActiveTabContent(pokemonId) {
         showStats(pokemonId);
     } else if (activeTab === 'moves') {
         showMoves(pokemonId);
-    } else {
+    } else if (activeTab === 'evo') {
+        showEvo(pokemonId);
+    }else {
         showAbout(pokemonId);
     }
 }

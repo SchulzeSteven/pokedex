@@ -71,6 +71,7 @@ function createPokemonDetailOverlay(pokemon, resetTab = false) {
             <div class="tab-content">
                 <div id="aboutTabButton${pokemon.id}" class="about tab" data-id="${pokemon.id}" onclick="showAbout(${pokemon.id})">About</div>
                 <div id="statsTabButton${pokemon.id}" class="stats tab" data-id="${pokemon.id}" onclick="showStats(${pokemon.id})">Stats</div>
+                <div id="evoTabButton${pokemon.id}" class="evo tab" data-id="${pokemon.id}" onclick="showEvo(${pokemon.id})">Evolution</div>
                 <div id="movesTabButton${pokemon.id}" class="moves tab" data-id="${pokemon.id}" onclick="showMoves(${pokemon.id})">Moves</div>
             </div>
             <div id="aboutTab${pokemon.id}" class="tab-detail about1">
@@ -93,6 +94,9 @@ function createPokemonDetailOverlay(pokemon, resetTab = false) {
             </div>
             <div id="statsTab${pokemon.id}" class="tab-detail stats1" style="display: none;">
                 <canvas id="myChart${pokemon.id}"></canvas>
+            </div>
+            <div id="evoTab${pokemon.id}" class="tab-detail evo1" style="display: none;">
+                <!-- Evo Content Here -->
             </div>
             <div id="movesTab${pokemon.id}" class="tab-detail" style="display: none;">
                 <!-- Moves Content Here -->
