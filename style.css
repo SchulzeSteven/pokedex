@@ -8,6 +8,7 @@
 
 body {
     margin: 0;
+    font-family: 'Roboto';
 }
 
 h1 {
@@ -227,7 +228,7 @@ h2 {
     margin-top: -45px;
     position: relative;
     z-index: 300;
-    top: 30px;
+    top: 28px;
     left: 40%;
     filter: drop-shadow(8px 4px 6px black);
 }
@@ -388,8 +389,10 @@ h2 {
 }
 
 canvas {
-    display: flex;
-    width: 260px !important;
+    display: flex !important;
+    max-width: 260px;
+    max-height: 150px;
+
 }
 
 .tab {
@@ -465,7 +468,7 @@ canvas {
 .evolution-chain {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 12px;
     padding-top: 30px;
     flex-wrap: wrap;
 }
@@ -473,10 +476,49 @@ canvas {
 .evolution-chain img {
     max-height: 70px;
     width: auto;
+    filter: drop-shadow(6px 4px 6px black);
 }
 
 .evo-text {
     font-size: 14px;
+}
+
+.arrow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: -20px;
+    position: relative;
+}
+
+.arrow svg {
+    position: fixed;
+    opacity: 50%;
+}
+
+/* Für Webkit-Browser wie Chrome, Safari und neuer Edge */
+::-webkit-scrollbar {
+    width: 10px; /* Breite des vertikalen Scrollbalkens */
+    height: 10px; /* Höhe des horizontalen Scrollbalkens */
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Hintergrundfarbe des Scrollbalken-Tracks */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #181616; /* Hintergrundfarbe des Scrollbalken-Griffs */
+    border-radius: 5px; /* Abgerundete Ecken des Scrollbalken-Griffs */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Hintergrundfarbe des Scrollbalken-Griffs beim Hover */
+}
+
+/* Für Firefox */
+* {
+    scrollbar-width: thin; /* 'auto' oder 'thin' */
+    scrollbar-color: #181616 #f1f1f1; /* Griff- und Track-Farbe */
 }
 
 @media only screen and (max-width: 500px) {
@@ -486,7 +528,8 @@ canvas {
     }
 
     canvas {
-        width: 210px !important;
+        max-width: 210px !important;
+        max-height: 144px !important;
     }
 
     h2 {
@@ -550,7 +593,11 @@ canvas {
     }
     
     .evo-text {
-        font-size: 12px;
+        font-size: 10px;
+    }
+
+    .arrow {
+        top: -20px;
     }
 }
 
@@ -560,7 +607,8 @@ canvas {
     }
 
     canvas {
-        width: 185px !important;
+        max-width: 180px !important;
+        max-height: 130px !important;
     }
 
     #movesContainer {
@@ -650,6 +698,10 @@ canvas {
     }
     
     .evo-text {
-        font-size: 10px !important;
+        font-size: 8px !important;
+    }
+
+    .arrow svg {
+        height: 16px;
     }
 }

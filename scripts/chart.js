@@ -6,6 +6,11 @@ function capitalizeLabel(label) {
 }
 
 
+function capitalize(text) {
+    return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+
 function renderChart(base_stat, name_stat, id) {
     const canvasId = `myChart${id}`;
     const canvas = document.getElementById(canvasId);
@@ -19,13 +24,9 @@ function renderChart(base_stat, name_stat, id) {
         console.error('Failed to get rendering context for:', canvasId);
         return;
     }
-
-    // Zerstöre die alte Chart-Instanz, falls vorhanden
     if (chartInstance) {
         chartInstance.destroy();
     }
-
-    // Erstelle ein neues Chart
     chartInstance = new Chart(ctx, {
         type: "bar",
         data: {
@@ -64,13 +65,36 @@ function renderChart(base_stat, name_stat, id) {
             scales: {
                 y: {
                     beginAtZero: true,
+                    ticks: {
+                        font: {
+                            size: 10,
+                            family: 'Arial',
+                        }
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: {
+                            size: 10,
+                            family: 'Arial',
+                        }
+                    }
                 },
             },
             indexAxis: "y",
             plugins: {
+                tooltip: {
+                    enabled: true,
+                    bodyFont: {
+                        size: 10,
+                    },
+                    titleFont: {
+                        size: 10,
+                    },
+                },
                 legend: {
                     display: false,
-                },
+                }
             },
         },
     });
