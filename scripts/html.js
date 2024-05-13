@@ -115,8 +115,22 @@ function createPokemonDetailOverlay(pokemon, resetTab = false) {
         setActiveTab('about', pokemon.id);
         showAbout(pokemon.id);
     } else {
-        setActiveTab(activeTab, pokemon.id); // Beibehalten des aktuellen Tabs
-        displayActiveTabContent(pokemon.id); // Diese Funktion sollte den Inhalt des aktiven Tabs anzeigen
+        setActiveTab(activeTab, pokemon.id);
+        displayActiveTabContent(pokemon.id);
     }
     return overlay;
+}
+
+
+function generateEvolutionHtml(detail, isActive, borderColor) {
+    return `
+        <div style="text-align: center;">
+            <img src="${detail.artwork}" alt="${detail.name}" class="evo-image ${isActive ? 'active-evolution-image' : ''}" style="${isActive ? `border: 4px solid ${borderColor}; box-shadow: 0 0 8px ${borderColor};` : ''}">
+            <div class="evo-text">${detail.name.charAt(0).toUpperCase() + detail.name.slice(1)}</div>
+        </div>
+    `;
+}
+
+function generateArrowHtml() {
+    return '<div class="arrow"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);transform: ;msFilter:;"><path d="M10.296 7.71 14.621 12l-4.325 4.29 1.408 1.42L17.461 12l-5.757-5.71z"></path><path d="M6.704 6.29 5.296 7.71 9.621 12l-4.325 4.29 1.408 1.42L12.461 12z"></path></svg></div>';
 }

@@ -5,13 +5,10 @@ async function fetchEvolutionChain(pokemonId) {
     try {
         const speciesResponse = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokemonId}/`);
         if (!speciesResponse.ok) throw new Error('Failed to fetch species data');
-
         const speciesData = await speciesResponse.json();
         const evolutionChainUrl = speciesData.evolution_chain.url;
-
         const evolutionResponse = await fetch(evolutionChainUrl);
         if (!evolutionResponse.ok) throw new Error('Failed to fetch evolution data');
-
         const evolutionData = await evolutionResponse.json();
         return filterEvolutionData(evolutionData.chain);
     } catch (error) {
@@ -42,41 +39,48 @@ function filterEvolutionData(chain, collectedData = []) {
 async function showEvo(pokemonId) {
     const evoTab = document.getElementById(`evoTab${pokemonId}`);
     if (activeTab === 'evo' && evoTab.style.display === 'flex') {
-        return;
+        return; // Wenn der Tab bereits aktiv und sichtbar ist, tue nichts.
     }
     activeTab = 'evo';
     setActiveTab(activeTab, pokemonId);
     updateActiveTab(pokemonId);
     const evolutionData = await fetchEvolutionChain(pokemonId);
-    if (evolutionData) {
-        const evoContent = buildEvolutionChainContent(evolutionData);
-        evoTab.innerHTML = evoContent;
-    } else {
-        evoTab.innerHTML = '<div>No evolution data available.</div>';
-    }
+    const currentActivePokemonId = pokemonId;
+    const evoContent = buildEvolutionChainContent(evolutionData, currentActivePokemonId);
+    evoTab.innerHTML = evoContent;
+    evoTab.style.display = 'flex';
+    setActiveTab(activeTab, pokemonId);
+    updateActiveTab(pokemonId);
 }
 
 
-function buildEvolutionChainContent(evolutionDetails) {
+function generateEvolutionChainDetails(evolutionDetails, currentActivePokemonId) {
+    let detailContent = '';
+    let activePokemonType = '';
+    const activePokemonDetail = evolutionDetails.find(detail => parseInt(detail.id) === parseInt(currentActivePokemonId));
+    if (activePokemonDetail) {
+        activePokemonType = activePokemonDetail.type;
+    }
+    const borderColor = typeColors[activePokemonType] || '#FFA500'; // Standardfarbe, falls Typ nicht gefunden wird
+
+    evolutionDetails.forEach((detail, index) => {
+        const isActive = parseInt(detail.id) === parseInt(currentActivePokemonId);
+        detailContent += generateEvolutionHtml(detail, isActive, borderColor);
+        if (index < evolutionDetails.length - 1) {
+            detailContent += generateArrowHtml();
+        }
+    });
+    return detailContent;
+}
+
+
+function buildEvolutionChainContent(evolutionDetails, currentActivePokemonId) {
     if (!evolutionDetails || evolutionDetails.length === 0) {
         return '<div>No evolution data available.</div>';
     }
+
     let htmlContent = '<div class="evolution-chain">';
-    evolutionDetails.forEach((detail, index) => {
-        let imageSrc = detail.artwork;
-        if (evolutionImagesCache[detail.id]) {
-            imageSrc = evolutionImagesCache[detail.id].src;  // Verwenden des vorgeladenen Bildes aus dem Cache
-        }
-        htmlContent += `
-            <div style="text-align: center;">
-                <img src="${imageSrc}" alt="${detail.name}" onload="this.classList.add('loaded')">
-                <div class="evo-text">${detail.name.charAt(0).toUpperCase() + detail.name.slice(1)}</div>
-            </div>
-        `;
-        if (index < evolutionDetails.length - 1) {
-            htmlContent += '<div class="arrow"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);transform: ;msFilter:;"><path d="M10.296 7.71 14.621 12l-4.325 4.29 1.408 1.42L17.461 12l-5.757-5.71z"></path><path d="M6.704 6.29 5.296 7.71 9.621 12l-4.325 4.29 1.408 1.42L12.461 12z"></path></svg></div>';
-        }
-    });
+    htmlContent += generateEvolutionChainDetails(evolutionDetails, currentActivePokemonId);
     htmlContent += '</div>';
     return htmlContent;
 }

@@ -29,33 +29,6 @@ function loadMore() {
 }
 
 
-async function searchAndSuggestPokemon() {
-    const searchTerm = document.getElementById('search').value.toLowerCase();
-    const content = document.getElementById('pokemon-list');
-    const loader = document.getElementById("dialog");
-    
-    if (searchTerm === lastSearchTerm) return;
-    lastSearchTerm = searchTerm;
-    if (searchTimeout) clearTimeout(searchTimeout);
-
-    searchTimeout = setTimeout(async () => {
-        loader.classList.remove("d-none");
-        if (searchTerm.length >= 3) {
-            content.innerHTML = '';
-            document.getElementById('loadMoreButton').style.display = 'none';
-            await searchAndRenderPokemons(searchTerm, content);
-            filterIsActive = true;
-        } else if (searchTerm.length === 0) {
-            content.innerHTML = '';
-            await resetAndReloadInitialPokemons(content);
-            document.getElementById('loadMoreButton').style.display = 'block';
-            filterIsActive = false;
-        }
-        loader.classList.add("d-none");
-    }, 500);
-}
-
-
 function toggleActiveClass(clickedElement) {
     const pokemonId = parseInt(clickedElement.id.replace('pokemon-card-', ''), 10);
     const pokemonData = pokemonCache[pokemonId];

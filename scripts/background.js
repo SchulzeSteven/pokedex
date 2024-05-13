@@ -1,7 +1,7 @@
 function showBackgroundBlur() {
     document.getElementById('background-blur').style.display = 'block';
     document.body.style.overflowY = 'hidden';
-    document.body.style.paddingRight = '15px';
+    document.body.style.paddingRight = '10px';
     toggleScrollButtonVisibility();
 }
 
