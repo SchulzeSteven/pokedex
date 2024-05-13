@@ -9,9 +9,13 @@ let searchTimeout;
 async function init() {
     let content = document.getElementById('pokemon-list');
     let maxId = Math.min(id + 29, 151);
+    let loader = document.getElementById("dialog");
+    loader.classList.remove("d-none");
+    await getPokemonData(pokemonAmount, id);
     for (; id <= maxId; id++) {
         await renderPokemon(id, content);
     }
+    loader.classList.add("d-none");
     if (id > 151) {
         document.getElementById('loadMoreButton').style.display = 'none';
     } else {
@@ -27,19 +31,27 @@ function loadMore() {
 
 async function searchAndSuggestPokemon() {
     const searchTerm = document.getElementById('search').value.toLowerCase();
+    const content = document.getElementById('pokemon-list');
+    const loader = document.getElementById("dialog");
+    
     if (searchTerm === lastSearchTerm) return;
     lastSearchTerm = searchTerm;
     if (searchTimeout) clearTimeout(searchTimeout);
+
     searchTimeout = setTimeout(async () => {
+        loader.classList.remove("d-none");
         if (searchTerm.length >= 3) {
+            content.innerHTML = '';
             document.getElementById('loadMoreButton').style.display = 'none';
-            document.getElementById('pokemon-list').innerHTML = '';
-            await searchAndRenderPokemons(searchTerm, document.getElementById('pokemon-list'));
+            await searchAndRenderPokemons(searchTerm, content);
+            filterIsActive = true;
         } else if (searchTerm.length === 0) {
-            await loadInitialPokemons(document.getElementById('pokemon-list'));
+            content.innerHTML = '';
+            await resetAndReloadInitialPokemons(content);
             document.getElementById('loadMoreButton').style.display = 'block';
             filterIsActive = false;
         }
+        loader.classList.add("d-none");
     }, 500);
 }
 

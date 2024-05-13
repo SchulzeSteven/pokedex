@@ -1,3 +1,6 @@
+let evolutionImagesCache = {};
+
+
 async function fetchEvolutionChain(pokemonId) {
     try {
         const speciesResponse = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokemonId}/`);
@@ -60,19 +63,38 @@ function buildEvolutionChainContent(evolutionDetails) {
     }
     let htmlContent = '<div class="evolution-chain">';
     evolutionDetails.forEach((detail, index) => {
-        if (detail.artwork) {
-            htmlContent += `
-                <div style="text-align: center;">
-                    <img src="${detail.artwork}" alt="${detail.name}">
-                    <div class="evo-text">${detail.name.charAt(0).toUpperCase() + detail.name.slice(1)}</div>
-                </div>
-            `;
-            if (index < evolutionDetails.length - 1) {
-                htmlContent += `
-                <div class="arrow"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);transform: ;msFilter:;"><path d="M10.296 7.71 14.621 12l-4.325 4.29 1.408 1.42L17.461 12l-5.757-5.71z"></path><path d="M6.704 6.29 5.296 7.71 9.621 12l-4.325 4.29 1.408 1.42L12.461 12z"></path></svg></div>
-            `}
+        let imageSrc = detail.artwork;
+        if (evolutionImagesCache[detail.id]) {
+            imageSrc = evolutionImagesCache[detail.id].src;  // Verwenden des vorgeladenen Bildes aus dem Cache
+        }
+        htmlContent += `
+            <div style="text-align: center;">
+                <img src="${imageSrc}" alt="${detail.name}" onload="this.classList.add('loaded')">
+                <div class="evo-text">${detail.name.charAt(0).toUpperCase() + detail.name.slice(1)}</div>
+            </div>
+        `;
+        if (index < evolutionDetails.length - 1) {
+            htmlContent += '<div class="arrow"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);transform: ;msFilter:;"><path d="M10.296 7.71 14.621 12l-4.325 4.29 1.408 1.42L17.461 12l-5.757-5.71z"></path><path d="M6.704 6.29 5.296 7.71 9.621 12l-4.325 4.29 1.408 1.42L12.461 12z"></path></svg></div>';
         }
     });
     htmlContent += '</div>';
     return htmlContent;
+}
+
+
+async function preloadEvolutionImages() {
+    for (let i = 1; i <= 151; i++) {
+        let evolutionData = await fetchEvolutionChain(i);
+        if (evolutionData) {
+            evolutionData.forEach(evolution => {
+                if (!evolutionImagesCache[evolution.id]) {
+                    const img = new Image();
+                    img.onload = () => {
+                        evolutionImagesCache[evolution.id] = img; // Speichert das geladene Image-Objekt im Cache
+                    };
+                    img.src = evolution.artwork; // Startet das Laden des Bildes
+                }
+            });
+        }
+    }
 }

@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCardClickListeners();
     initializeCloseButtonListener();
     initializeScrollToTopButton();
+    preloadEvolutionImages();
 });
 
 

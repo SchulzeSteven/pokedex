@@ -16,11 +16,15 @@ async function getPokemonData(id) {
 
 
 async function loadInitialPokemons(content) {
-    content.innerHTML = '';
+    let loader = document.getElementById("dialog");
+    loader.classList.remove("d-none");
+    pokemonAmount += id;
+    content.innerHTML = ''; 
     for (let i = 1; i <= 30; i++) {
         let currentPokemon = await getPokemonData(i);
         content.innerHTML += PokemonRender(currentPokemon);
     }
+    loader.classList.add("d-none");
     document.getElementById('loadMoreButton').style.display = 'block';
     filterIsActive = false;
 }
@@ -48,4 +52,14 @@ function PokemonRender(currentPokemon) {
     let bodyHTML = generatePokemonBody(currentPokemon, species1Color, species2Color);
 
     return generatePokemonCardHtml(currentPokemon.id, pokemonName, cardBackgroundColor, headerHTML, bodyHTML, currentPokemon);
+}
+
+
+function loadingSpinner() {
+    let loader = document.getElementById('loader');
+
+    loader.remove('d-none');
+    setTimeout(function () {
+        loader.classList.add('d-none');
+    }, 2000);
 }

@@ -30,17 +30,36 @@ async function searchAndRenderPokemons(searchTerm, content) {
 async function filterByType() {
     const checkedTypes = Array.from(document.querySelectorAll('input[name="type"]:checked')).map(el => el.value);
     const content = document.getElementById('pokemon-list');
+    const loader = document.getElementById("dialog");
     content.innerHTML = '';
-
+    loader.classList.remove("d-none");
     if (checkedTypes.length === 0) {
         filterIsActive = false;
-        loadInitialPokemons(content);
+        await resetAndReloadInitialPokemons(content);
         document.getElementById('loadMoreButton').style.display = 'block';
     } else {
         filterIsActive = true;
         document.getElementById('loadMoreButton').style.display = 'none';
-        filterAndRenderPokemons(checkedTypes, content);
+        await filterAndRenderPokemons(checkedTypes, content);
     }
+    loader.classList.add("d-none");
+}
+
+
+async function resetAndReloadInitialPokemons(content) {
+    pokemonCache = {};
+    let loader = document.getElementById("dialog");
+    loader.classList.remove("d-none");
+    content.innerHTML = '';
+    for (let i = 1; i <= 30; i++) {
+        let currentPokemon = await getPokemonData(i);
+        if (currentPokemon) {
+            content.innerHTML += PokemonRender(currentPokemon);
+        }
+    }
+    loader.classList.add("d-none");
+    document.getElementById('loadMoreButton').style.display = 'block';
+    filterIsActive = false;
 }
 
 
