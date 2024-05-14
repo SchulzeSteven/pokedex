@@ -61,8 +61,7 @@ function generateEvolutionChainDetails(evolutionDetails, currentActivePokemonId)
     if (activePokemonDetail) {
         activePokemonType = activePokemonDetail.type;
     }
-    const borderColor = typeColors[activePokemonType] || '#FFA500'; // Standardfarbe, falls Typ nicht gefunden wird
-
+    const borderColor = typeColors[activePokemonType] || '#000000'; // Standardfarbe, falls Typ nicht gefunden wird
     evolutionDetails.forEach((detail, index) => {
         const isActive = parseInt(detail.id) === parseInt(currentActivePokemonId);
         detailContent += generateEvolutionHtml(detail, isActive, borderColor);
@@ -87,18 +86,37 @@ function buildEvolutionChainContent(evolutionDetails, currentActivePokemonId) {
 
 
 async function preloadEvolutionImages() {
-    for (let i = 1; i <= 151; i++) {
-        let evolutionData = await fetchEvolutionChain(i);
-        if (evolutionData) {
-            evolutionData.forEach(evolution => {
-                if (!evolutionImagesCache[evolution.id]) {
-                    const img = new Image();
-                    img.onload = () => {
-                        evolutionImagesCache[evolution.id] = img; // Speichert das geladene Image-Objekt im Cache
-                    };
-                    img.src = evolution.artwork; // Startet das Laden des Bildes
-                }
-            });
+    for (let i = 1; i <= 30; i++) {
+        if (!pokemonCache[i]) { // Überprüfe, ob das Pokémon bereits im Cache ist
+            let evolutionData = await fetchEvolutionChain(i);
+            if (evolutionData) {
+                evolutionData.forEach(evolution => {
+                    if (!evolutionImagesCache[evolution.id]) {
+                        const img = new Image();
+                        img.onload = () => {
+                            evolutionImagesCache[evolution.id] = img; // Speichert das geladene Image-Objekt im Cache
+                        };
+                        img.src = evolution.artwork; // Startet das Laden des Bildes
+                    }
+                });
+            }
         }
     }
+}
+
+
+async function showPokemonDetail(pokemonId) {
+    const pokemonData = await getPokemonData(pokemonId);
+    if (!pokemonData) {
+        console.error('No data available for Pokemon ID:', pokemonId);
+        return;
+    }
+    removeActiveOverlay();
+    const overlay = createPokemonDetailOverlay(pokemonData);
+    document.body.appendChild(overlay);
+    showBackgroundBlur();
+    // Bleibe im Evolution-Tab anstatt zu wechseln
+    activeTab = 'evo';
+    setActiveTab(activeTab, pokemonId);
+    showEvo(pokemonId);
 }

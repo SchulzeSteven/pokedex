@@ -24,8 +24,25 @@ async function init() {
 }
 
 
-function loadMore() {
-    init();
+async function loadMore() {
+    let content = document.getElementById('pokemon-list');
+    let maxId = Math.min(id + 29, 151); // Berechnet die Obergrenze für die nächste Ladung
+    let loader = document.getElementById("dialog");
+    loader.classList.remove("d-none");
+
+    // Lade nur die nächsten 30 Pokémon
+    for (; id <= maxId; id++) {
+        if (!pokemonCache[id]) { // Lade nur, wenn das Pokémon nicht im Cache ist
+            await renderPokemon(id, content);
+        }
+    }
+    
+    loader.classList.add("d-none");
+    if (id > 151) {
+        document.getElementById('loadMoreButton').style.display = 'none';
+    } else {
+        document.getElementById('loadMoreButton').style.display = 'block';
+    }
 }
 
 

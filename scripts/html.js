@@ -59,7 +59,7 @@ function createPokemonDetailOverlay(pokemon, resetTab = false) {
     const weightInKilograms = (pokemon.weight / 10).toFixed(2) + ' kg';
 
     overlay.innerHTML = `
-        <img src="img/2.svg" class="pokeball-bg1 align-self-center" alt="">
+        <img src="img/2.svg" class="pokeball-bg1 align-self-center rotate" alt="">
         <div class="h2-back">
             <h2>${pokemonName}</h2><span>#${formattedId}</span>
         </div>
@@ -125,7 +125,9 @@ function createPokemonDetailOverlay(pokemon, resetTab = false) {
 function generateEvolutionHtml(detail, isActive, borderColor) {
     return `
         <div style="text-align: center;">
-            <img src="${detail.artwork}" alt="${detail.name}" class="evo-image ${isActive ? 'active-evolution-image' : ''}" style="${isActive ? `border: 4px solid ${borderColor}; box-shadow: 0 0 8px ${borderColor};` : ''}">
+            <img src="${detail.artwork}" alt="${detail.name}" class="evo-image ${isActive ? 'active-evolution-image' : ''}" 
+                 style="${isActive ? `border: 0px solid ${borderColor}; border-radius: 20px; box-shadow: 0 0 4px ${borderColor};` : ''}"
+                 onclick="showPokemonDetail(${detail.id})">
             <div class="evo-text">${detail.name.charAt(0).toUpperCase() + detail.name.slice(1)}</div>
         </div>
     `;
