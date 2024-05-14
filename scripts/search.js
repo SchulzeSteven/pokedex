@@ -30,6 +30,8 @@ async function searchAndRenderPokemons(searchTerm, content) {
 async function filterByType() {
     const checkedTypes = Array.from(document.querySelectorAll('input[name="type"]:checked')).map(el => el.value);
     const content = document.getElementById('pokemon-list');
+    const footer = document.getElementById('footer');
+    footer.style.display = 'none';
     const loader = document.getElementById("dialog");
     content.innerHTML = '';
     loader.classList.remove("d-none");
@@ -43,6 +45,7 @@ async function filterByType() {
         await filterAndRenderPokemons(checkedTypes, content);
     }
     loader.classList.add("d-none");
+    document.getElementById('footer').style.display = 'block';
 }
 
 

@@ -21,6 +21,7 @@ async function init() {
     } else {
         document.getElementById('loadMoreButton').style.display = 'block';
     }
+    document.getElementById('footer').style.display = 'block'; // Zeige den Footer
 }
 
 
@@ -43,6 +44,7 @@ async function loadMore() {
     } else {
         document.getElementById('loadMoreButton').style.display = 'block';
     }
+    document.getElementById('footer').style.display = 'block';
 }
 
 
