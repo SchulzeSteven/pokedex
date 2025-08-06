@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeMouseEvents();
     initializeCardClickListeners();
     initializeCloseButtonListener();
+    initializeOutsideClickListener();
     initializeScrollToTopButton();
     preloadEvolutionImages();
 });
@@ -40,6 +41,18 @@ function initializeCloseButtonListener() {
     document.body.addEventListener('click', event => {
         if (event.target.classList.contains('close-button') || event.target.closest('.close-button')) {
             removeActiveOverlay(event);
+        }
+    });
+}
+
+
+function initializeOutsideClickListener() {
+    document.addEventListener('click', function (event) {
+        const overlay = document.querySelector('.active-overlay');
+        const blur = document.getElementById('background-blur');
+
+        if (overlay && blur && event.target === blur) {
+            removeActiveOverlay();
         }
     });
 }
