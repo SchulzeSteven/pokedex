@@ -1,3 +1,6 @@
+/**
+ * Initializes all event listeners and preloads data after the DOM is fully loaded.
+ */
 document.addEventListener('DOMContentLoaded', () => {
     initializeTypeOptions();
     initializeMouseEvents();
@@ -9,6 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+/**
+ * Populates the type filter options dynamically using the available type colors.
+ */
 function initializeTypeOptions() {
     const typeOptionsContainer = document.getElementById('type-options');
     const typeCheckboxHtml = Object.keys(typeColors).map(type =>
@@ -18,6 +24,9 @@ function initializeTypeOptions() {
 }
 
 
+/**
+ * Adds mouseenter and mouseleave events to handle delayed hiding of the type options filter menu.
+ */
 function initializeMouseEvents() {
     const typeOptionsContainer = document.getElementById('type-options');
     let timeoutId;
@@ -30,6 +39,9 @@ function initializeMouseEvents() {
 }
 
 
+/**
+ * Assigns click event handlers to all Pokémon cards to open their detailed overlay.
+ */
 function initializeCardClickListeners() {
     document.querySelectorAll('.card').forEach(card => {
         card.onclick = () => toggleActiveClass(card);
@@ -37,6 +49,9 @@ function initializeCardClickListeners() {
 }
 
 
+/**
+ * Adds a global click listener to handle closing the Pokémon overlay when the close button is clicked.
+ */
 function initializeCloseButtonListener() {
     document.body.addEventListener('click', event => {
         if (event.target.classList.contains('close-button') || event.target.closest('.close-button')) {
@@ -46,6 +61,9 @@ function initializeCloseButtonListener() {
 }
 
 
+/**
+ * Adds a click listener to the document to allow closing the overlay by clicking the background blur.
+ */
 function initializeOutsideClickListener() {
     document.addEventListener('click', function (event) {
         const overlay = document.querySelector('.active-overlay');
@@ -58,11 +76,14 @@ function initializeOutsideClickListener() {
 }
 
 
+/**
+ * Creates and initializes a scroll-to-top button and adds scroll event listener to toggle its visibility.
+ */
 function initializeScrollToTopButton() {
     const scrollToTopButton = document.createElement('button');
     scrollToTopButton.id = 'scrollToTopButton';
     scrollToTopButton.innerText = '↑';
-    scrollToTopButton.style.display = 'none'; // Versteckt den Button standardmäßig
+    scrollToTopButton.style.display = 'none'; // Hide button by default
     scrollToTopButton.onclick = scrollToTop;
     document.body.appendChild(scrollToTopButton);
 

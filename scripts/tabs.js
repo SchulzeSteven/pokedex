@@ -1,5 +1,6 @@
 let activeTab = 'about';
 
+
 /**
  * Sets the active tab and updates its visual state.
  * @param {string} tabName - The name of the tab to activate (e.g., 'about', 'stats', 'moves', 'evo').
@@ -15,6 +16,7 @@ function setActiveTab(tabName, id) {
     }
 }
 
+
 /**
  * Displays the "About" tab for a given Pokémon.
  * @param {number} id - The ID of the Pokémon whose "About" tab should be shown.
@@ -29,6 +31,7 @@ function showAbout(id) {
     setActiveTab(activeTab, id);
 }
 
+
 /**
  * Displays the "Stats" tab for a given Pokémon.
  * @param {number} id - The ID of the Pokémon whose "Stats" tab should be shown.
@@ -41,6 +44,7 @@ function showStats(id) {
     updateActiveTab(id);
     setActiveTab(activeTab, id);
 }
+
 
 /**
  * Displays the "Moves" tab for a given Pokémon.
@@ -55,6 +59,7 @@ function showMoves(id) {
     setActiveTab(activeTab, id);
 }
 
+
 /**
  * Hides all tabs for a given Pokémon card.
  * @param {number} id - The ID of the Pokémon whose tab contents should be hidden.
@@ -67,6 +72,7 @@ function hideAllTabs(id) {
         }
     });
 }
+
 
 /**
  * Updates and displays the current active tab content.
@@ -93,6 +99,7 @@ function updateActiveTab(id) {
         }
     }
 }
+
 
 /**
  * Displays the currently selected tab content (About, Stats, Moves, or Evolution).

@@ -1,3 +1,6 @@
+/**
+ * Displays a blurred background overlay and disables page scroll.
+ */
 function showBackgroundBlur() {
     document.getElementById('background-blur').style.display = 'block';
     document.body.style.overflowY = 'hidden';
@@ -6,6 +9,9 @@ function showBackgroundBlur() {
 }
 
 
+/**
+ * Hides the blurred background overlay and re-enables page scroll.
+ */
 function hideBackgroundBlur() {
     document.getElementById('background-blur').style.display = 'none';
     document.body.style.overflowY = 'auto';
@@ -14,6 +20,11 @@ function hideBackgroundBlur() {
 }
 
 
+/**
+ * Toggles the visibility of the "scroll to top" button.
+ * The button is only shown if the user has scrolled down more than 180px
+ * and no Pokémon detail overlay is currently open.
+ */
 function toggleScrollButtonVisibility() {
     const scrollToTopButton = document.getElementById('scrollToTopButton');
     if (window.pageYOffset > 180 && !document.querySelector('.active-overlay')) {
@@ -24,11 +35,13 @@ function toggleScrollButtonVisibility() {
 }
 
 
+/**
+ * Smoothly scrolls the page to the top and hides the scroll-to-top button shortly after.
+ */
 function scrollToTop() {
     window.scrollTo({
         top: 0,
         behavior: 'smooth'
     });
-    // Warte kurz, um den Status des Buttons nach dem Scrollen zu überprüfen
     setTimeout(toggleScrollButtonVisibility, 150);
 }

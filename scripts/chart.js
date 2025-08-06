@@ -1,16 +1,39 @@
+/** 
+ * Stores the current Chart.js instance to allow destroying and redrawing the chart.
+ * @type {Chart|null}
+ */
 let chartInstance = null;
 
 
+/**
+ * Capitalizes the first letter of a given label (used for chart labels).
+ * 
+ * @param {string} label - The label text to capitalize.
+ * @returns {string} - Capitalized label.
+ */
 function capitalizeLabel(label) {
     return label.charAt(0).toUpperCase() + label.slice(1);
 }
 
 
+/**
+ * Capitalizes the first letter of a general string.
+ * 
+ * @param {string} text - The input text to capitalize.
+ * @returns {string} - Capitalized text.
+ */
 function capitalize(text) {
     return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 
+/**
+ * Renders a horizontal bar chart showing the Pokémon's base stats.
+ * 
+ * @param {number[]} base_stat - Array of base stat values.
+ * @param {string[]} name_stat - Array of stat names (e.g., "hp", "attack").
+ * @param {number} id - The Pokémon ID used to target the correct canvas element.
+ */
 function renderChart(base_stat, name_stat, id) {
     const canvasId = `myChart${id}`;
     const canvas = document.getElementById(canvasId);
@@ -24,9 +47,12 @@ function renderChart(base_stat, name_stat, id) {
         console.error('Failed to get rendering context for:', canvasId);
         return;
     }
+
+    // Destroy previous chart instance if it exists
     if (chartInstance) {
         chartInstance.destroy();
     }
+
     chartInstance = new Chart(ctx, {
         type: "bar",
         data: {
@@ -62,6 +88,7 @@ function renderChart(base_stat, name_stat, id) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            indexAxis: "y",
             scales: {
                 y: {
                     beginAtZero: true,
@@ -81,7 +108,6 @@ function renderChart(base_stat, name_stat, id) {
                     }
                 },
             },
-            indexAxis: "y",
             plugins: {
                 tooltip: {
                     enabled: true,
